@@ -131,20 +131,6 @@ public interface UserService {
      */
     public List<UserEntity> getUsersByIds(List<String> userIds);
 
-    /**
-     * 根据登录用户，查询所对应的员工ID
-     * @param userEntity
-     * @return
-     */
-    public String getEmployeeIdByUser(UserEntity userEntity);
-
-
-    /**
-     * 根据empId，查询所对应的user
-     * @param empId
-     * @return
-     */
-    public UserEntity getUserByEmpId(String empId);
 
     UserEntity getUserByRequest(HttpServletRequest request);
 

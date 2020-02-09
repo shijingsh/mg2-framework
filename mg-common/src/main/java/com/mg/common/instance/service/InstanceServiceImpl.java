@@ -1,10 +1,10 @@
 package com.mg.common.instance.service;
 
+import com.mg.common.entity.QInstanceEntity;
 import com.mg.framework.utils.StatusEnum;
 import com.mysema.query.jpa.impl.JPAQuery;
 import com.mg.common.context.MgServerContext;
 import com.mg.common.entity.InstanceEntity;
-import com.mg.common.entity.QInstanceEntity;
 import com.mg.common.instance.dao.InstanceDao;
 import com.mg.framework.entity.vo.PageTableVO;
 import org.springframework.beans.factory.annotation.Autowired;

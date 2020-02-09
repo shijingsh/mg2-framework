@@ -1,6 +1,7 @@
 package com.mg.common.user.service;
 
 import com.alibaba.fastjson.JSONObject;
+import com.mg.common.entity.QUserEntity;
 import com.mg.common.entity.UserEntity;
 import com.mg.common.user.vo.ThirdUserVo;
 import com.mg.common.utils.MD5;
