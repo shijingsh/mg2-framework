@@ -9,10 +9,10 @@ import java.util.List;
  * 简单形式的分页组件
  */
 public class PageTableVO extends MgPageable {
-	
+
 	private static final long serialVersionUID = -2332973656118325329L;
 
-	private List<TableHeaderCellVO> columns = new ArrayList<>();
+	//private List<TableHeaderCellVO> columns = new ArrayList<>();
 	/**
 	 * 数据集合
 	 */
@@ -60,11 +60,4 @@ public class PageTableVO extends MgPageable {
 		this.extendData = extendData;
 	}
 
-	public List<TableHeaderCellVO> getColumns() {
-		return columns;
-	}
-
-	public void setColumns(List<TableHeaderCellVO> columns) {
-		this.columns = columns;
-	}
 }

@@ -65,11 +65,6 @@ public class UserEntity extends ExpandEntity {
      */
     @Column(name = "longitude",precision = 20,scale = 8)
     private BigDecimal longitude;
-    /**
-     * 员工拥有的角色
-     */
-    @ManyToMany(mappedBy="members",fetch = FetchType.LAZY)
-    private List<RoleEntity> roles = new LinkedList<RoleEntity>();
 
     /**
      * 第三方登录token
@@ -99,14 +94,6 @@ public class UserEntity extends ExpandEntity {
     }
     public void setName(String name) {
         this.name = name;
-    }
-
-    public List<RoleEntity> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(List<RoleEntity> roles) {
-        this.roles = roles;
     }
 
     public String getPassword() {

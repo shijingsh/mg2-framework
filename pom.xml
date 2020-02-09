@@ -6,7 +6,7 @@
     <artifactId>oss-parent</artifactId>
     <version>7</version>
   </parent>
-  <groupId>com.github.mg365</groupId>
+  <groupId>com.github.shijingsh</groupId>
   <artifactId>mg2-framework</artifactId>
   <version>1.0.0</version>
   <modules>
@@ -53,18 +53,179 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <java.version>1.8</java.version>
     <spring.version>5.1.6.RELEASE</spring.version>
     <hibernate.version>4.2.11.Final</hibernate.version>
-    <struts.version>1.3.8</struts.version>
     <poi.version>3.10-FINAL</poi.version>
-    <activiti.version>5.14</activiti.version>
-    <jetty.version>9.4.0.M0</jetty.version>
     <shiro.version>1.2.2</shiro.version>
     <querydsl.version>3.5.1</querydsl.version>
-    <spring.batch.version>3.0.2.RELEASE</spring.batch.version>
   </properties>
+  <build>
+    <finalName>mg2-framework</finalName>
+    <defaultGoal>compile</defaultGoal>
+    <!-- resource and testResource -->
+    <resources>
+      <resource>
+        <directory>src/main/java</directory>
+        <includes>
+          <include>**/*.xml</include>
+          <include>**/*.properties</include>
+        </includes>
+      </resource>
+      <resource>
+        <directory>src/main/resources</directory>
+        <includes>
+          <include>**/*.xml</include>
+          <include>**/*.properties</include>
+          <include>**/*.*</include>
+        </includes>
+      </resource>
+    </resources>
+    <testResources>
+      <testResource>
+        <directory>src/test/resources</directory>
+        <includes>
+          <include>**/*.xml</include>
+          <include>**/*.properties</include>
+        </includes>
+      </testResource>
+    </testResources>
 
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.8</source>
+          <target>1.8</target>
+          <encoding>utf-8</encoding>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-war-plugin</artifactId>
+        <version>2.4</version>
+        <configuration>
+          <outputDirectory>target/deploy</outputDirectory>
+        </configuration>
+      </plugin>
+      <!-- resources插件 -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>2.6</version>
+        <configuration>
+          <encoding>${project.build.sourceEncoding}</encoding>
+          <overwrite>false</overwrite>
+        </configuration>
+      </plugin>
+
+      <!-- install插件 -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-install-plugin</artifactId>
+        <version>2.5.1</version>
+      </plugin>
+
+      <!-- jetty插件, 设定context path与spring profile -->
+      <plugin>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-maven-plugin</artifactId>
+        <version>9.4.0.M0</version>
+        <configuration>
+          <stopPort>9966</stopPort>
+          <stopKey>foo</stopKey>
+          <scanIntervalSeconds>0</scanIntervalSeconds>
+          <systemProperties>
+            <systemProperty>
+              <name>spring.profiles.active</name>
+              <value>development</value>
+            </systemProperty>
+          </systemProperties>
+          <useTestClasspath>true</useTestClasspath>
+
+          <classesDirectory>mg2-framework/target/classes/, mg-entity/target/classes/,mg-common/target/classes/,
+            webapp/target/classes/</classesDirectory>
+          <webAppSourceDirectory>webapp/src/main/webapp</webAppSourceDirectory>
+
+          <webAppConfig>
+            <contextPath>/${project.artifactId}</contextPath>
+            <defaultsDescriptor>webapp/src/main/resources/webdefault.xml</defaultsDescriptor>
+          </webAppConfig>
+        </configuration>
+      </plugin>
+
+      <!-- tomcat7 插件 -->
+      <plugin>
+        <groupId>org.apache.tomcat.maven</groupId>
+        <artifactId>tomcat7-maven-plugin</artifactId>
+        <version>2.2</version>
+        <configuration>
+          <url>http://localhost:8080/manager/text</url>
+          <server>tomcat</server>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.sonatype.plugins</groupId>
+        <artifactId>nexus-staging-maven-plugin</artifactId>
+        <version>1.6.7</version>
+        <extensions>true</extensions>
+        <configuration>
+          <serverId>sonatype-nexus-staging</serverId>
+          <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+          <autoReleaseAfterClose>true</autoReleaseAfterClose>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <version>2.2.1</version>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <goals>
+              <goal>jar-no-fork</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.9.1</version>
+        <executions>
+          <execution>
+            <id>attach-javadocs</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+            <configuration>
+              <additionalparam>-Xdoclint:none</additionalparam>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-gpg-plugin</artifactId>
+        <version>1.6</version>
+        <executions>
+          <execution>
+            <id>sign-artifacts</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>sign</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
   <dependencies>
+    <!-- servlet -->
     <dependency>
       <groupId>javax.servlet.jsp</groupId>
       <artifactId>javax.servlet.jsp-api</artifactId>
@@ -77,13 +238,19 @@
       <version>2.5</version>
       <scope>provided</scope>
     </dependency>
-
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>jstl</artifactId>
       <version>1.2</version>
       <scope>compile</scope>
     </dependency>
+
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>3.9</version>
+    </dependency>
+
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-core</artifactId>
@@ -257,13 +424,6 @@
       <groupId>org.springframework</groupId>
       <artifactId>spring-test</artifactId>
       <version>${spring.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <!-- 内嵌式服务器测试用 -->
-    <dependency>
-      <groupId>org.eclipse.jetty</groupId>
-      <artifactId>jetty-server</artifactId>
-      <version>${jetty.version}</version>
       <scope>test</scope>
     </dependency>
 
@@ -470,23 +630,6 @@
       <groupId>com.fasterxml.uuid</groupId>
       <artifactId>java-uuid-generator</artifactId>
       <version>3.1.3</version>
-    </dependency>
-
-      <!-- activiti begin -->
-    <dependency>
-      <groupId>org.activiti</groupId>
-      <artifactId>activiti-engine</artifactId>
-      <version>5.14</version>
-    </dependency>
-    <dependency>
-      <groupId>org.activiti</groupId>
-      <artifactId>activiti-bpmn-layout</artifactId>
-      <version>${activiti.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.activiti</groupId>
-      <artifactId>activiti-spring</artifactId>
-      <version>${activiti.version}</version>
     </dependency>
 
     <!-- SECURITY begin -->

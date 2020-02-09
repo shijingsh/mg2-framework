@@ -2,8 +2,6 @@ package com.mg.common.user.service;
 
 import com.mg.common.entity.UserEntity;
 import com.mg.common.user.vo.ThirdUserVo;
-import com.mg.framework.entity.metadata.MExpressGroupEntity;
-import com.mg.framework.entity.metadata.MObjectEntity;
 import com.mg.framework.entity.vo.PageTableVO;
 
 import javax.servlet.http.HttpServletRequest;
@@ -114,14 +112,6 @@ public interface UserService {
      * @return
      */
     public UserEntity saveInitUserPassWord(String userId);
-
-    /**
-     * 根据条件组，生成登录帐号
-     * @param metaObject
-     * @param expressGroupEntity
-     * @return 生成的账号数目
-     */
-    Integer createUser(MObjectEntity metaObject, MExpressGroupEntity expressGroupEntity);
 
     /**
      * 查询用户名称在集合userNames中的所有用户集

@@ -1,6 +1,6 @@
 package com.mg.common.utils.excel;
 
-import com.mg.common.metadata.util.ExcelUtil;
+import com.mg.common.utils.ExcelUtil;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.*;
 import org.slf4j.Logger;

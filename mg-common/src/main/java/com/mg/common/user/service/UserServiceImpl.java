@@ -1,25 +1,14 @@
 package com.mg.common.user.service;
 
 import com.alibaba.fastjson.JSONObject;
-import com.mg.common.entity.QUserEntity;
 import com.mg.common.entity.UserEntity;
-import com.mg.common.entity.UserRuleEntity;
-import com.mg.common.metadata.service.MetaDataExpressService;
-import com.mg.common.metadata.service.MetaDataService;
 import com.mg.common.user.vo.ThirdUserVo;
 import com.mg.common.utils.MD5;
-import com.mg.framework.entity.metadata.MExpressGroupEntity;
-import com.mg.framework.entity.metadata.MExpressionEntity;
-import com.mg.framework.entity.metadata.MirrorPropertyEntity;
 import com.mg.framework.utils.StatusEnum;
 import com.mg.framework.utils.UserHolder;
 import com.mysema.query.jpa.impl.JPAQuery;
 import com.mysema.query.types.expr.BooleanExpression;
-import com.mg.common.metadata.service.CustomFormService;
-import com.mg.common.metadata.service.MetaDataQueryService;
-import com.mg.common.metadata.util.MetaDataUtils;
 import com.mg.common.user.dao.UserDao;
-import com.mg.framework.entity.metadata.MObjectEntity;
 import com.mg.framework.entity.vo.PageTableVO;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -47,16 +36,6 @@ public class UserServiceImpl implements UserService {
     private EntityManager entityManager;
     @Autowired
     private UserDao userDao;
-    @Autowired
-    private UserRuleService userRuleService;
-    @Autowired
-    MetaDataService metaDataService;
-    @Autowired
-    MetaDataQueryService metaDataQueryService;
-    @Autowired
-    CustomFormService customFormService;
-    @Autowired
-    MetaDataExpressService metaDataExpressionService;
     /**
      * 根据用户名,获取用户信息
      * @param loginName
@@ -110,7 +89,7 @@ public class UserServiceImpl implements UserService {
     public UserEntity saveInitUserPassWord(String userId) {
 
         UserEntity userEntity = userDao.findOne(userId);
-        userRuleService.initUser(userEntity, true);
+        //userRuleService.initUser(userEntity, true);
         userDao.save(userEntity);
         return userEntity;
     }
@@ -119,7 +98,6 @@ public class UserServiceImpl implements UserService {
     public void delete(String userId) {
 
         UserEntity userEntity = userDao.findOne(userId);
-        userEntity.getRoles().clear();
         userDao.delete(userEntity);
     }
     public Long findCount(PageTableVO pageTableVO) {
@@ -357,98 +335,6 @@ public class UserServiceImpl implements UserService {
 
     protected JPAQuery getQuery() {
         return new JPAQuery(entityManager);
-    }
-
-    /**
-     * 根据条件组，生成登录帐号
-     * @param metaObject
-     * @param expressGroupEntity
-     */
-    @Transactional
-    public Integer createUser(MObjectEntity metaObject, MExpressGroupEntity expressGroupEntity) {
-        List<MirrorPropertyEntity> mPropertyEntityList  = metaDataQueryService.findMPropertyNormalByBelongMObject(metaObject);
-        MirrorPropertyEntity primaryKey = metaDataQueryService.findPrimaryKeyMPropertyByBelongMObject(metaObject);
-        mPropertyEntityList.add(primaryKey);
-                //设置排序字段
-        customFormService.initSort(metaObject,expressGroupEntity);
-        //数据列表
-        expressGroupEntity.setPageSize(-1);
-        List<Map<String,Object>> list = metaDataService.queryByMetaData(metaObject, mPropertyEntityList, expressGroupEntity);
-
-        UserRuleEntity userRuleEntity = userRuleService.get();
-        String loginNameRule = userRuleEntity.getLoginName();
-        MirrorPropertyEntity loginNameProperty = metaDataQueryService.findMPropertyByBelongMObjectAndName(metaObject, loginNameRule);
-        MirrorPropertyEntity nameProperty = metaDataQueryService.findMPropertyByBelongMObjectAndFieldName(metaObject,metaObject, MetaDataUtils.META_FIELD_NAME);
-        String password = MD5.GetMD5Code(userRuleEntity.getDefaultPassword());
-        if(loginNameProperty==null){
-            return 0;
-        }
-        Integer count = 0;
-        for(Map<String,Object> empMap:list){
-            String loginName = (String)empMap.get(loginNameProperty.getPropertyPath());
-            String name = (String)empMap.get(nameProperty.getPropertyPath());
-            String id = (String)empMap.get(MetaDataUtils.META_FIELD_ID);
-            if(StringUtils.isNotBlank(loginName)){
-                UserEntity userEntity = getUser(loginName);
-                if(userEntity==null){
-                    //用户不存在的时候，才增加账号
-                    userEntity = new UserEntity();
-                    userEntity.setLoginName(loginName);
-                    userEntity.setName(name);
-                    userEntity.setEmployeeId(id);
-                    userEntity.setPassword(password);
-
-                    userDao.saveAndFlush(userEntity);
-
-                    count++;
-                }else{
-                    userEntity.setEmployeeId(id);
-                    userDao.saveAndFlush(userEntity);
-                }
-            }
-        }
-
-        return count;
-    }
-
-    /**
-     * 根据登录用户，查询所对应的员工ID
-     * @param userEntity
-     * @return
-     */
-    public String getEmployeeIdByUser(UserEntity userEntity){
-        String loginName = userEntity.getLoginName();
-        UserRuleEntity userRuleEntity = userRuleService.get();
-        MObjectEntity metaObject = metaDataQueryService.findEmployeeMObject();
-        MirrorPropertyEntity loginNameProperty = metaDataQueryService.findMPropertyByBelongMObjectAndName(metaObject, userRuleEntity.getLoginName());
-        MExpressionEntity expression =  metaDataExpressionService.createSimpleEqExpress(loginNameProperty, loginName);
-        MExpressGroupEntity expressGroup = new MExpressGroupEntity(expression);
-        List<Map<String, Object>> list = metaDataService.queryByMetaData(metaObject, expressGroup);
-        if(list.size()>0){
-            return String.valueOf(list.get(0).get(MetaDataUtils.META_FIELD_ID));
-        }
-        return null;
-    }
-
-    /**
-     * 根据empId，查询所对应的user
-     * @param empId
-     * @return
-     */
-    public UserEntity getUserByEmpId(String empId){
-        MObjectEntity empObject = metaDataQueryService.findEmployeeMObject();
-        Map<String,Object> empMap = metaDataService.queryById(empObject.getId(), empId);
-        UserRuleEntity userRuleEntity = userRuleService.get();
-        String loginName = userRuleEntity.getLoginName();
-        MirrorPropertyEntity mirrorPropertyEntity = metaDataQueryService.findMPropertyByBelongMObjectAndName(empObject, loginName);
-        if(mirrorPropertyEntity!=null && empMap.get(mirrorPropertyEntity.getPropertyPath())!=null){
-            loginName = String.valueOf(empMap.get(mirrorPropertyEntity.getPropertyPath()));
-            UserEntity userEntity = getUser(loginName);
-
-            return userEntity;
-        }
-
-        return null;
     }
 
     /**

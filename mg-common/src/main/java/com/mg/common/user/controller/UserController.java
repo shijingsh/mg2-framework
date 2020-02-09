@@ -2,29 +2,22 @@ package com.mg.common.user.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.mg.common.components.SmsService;
-import com.mg.common.entity.RoleEntity;
 import com.mg.common.entity.UserEntity;
-import com.mg.common.metadata.service.MetaDataExpressService;
-import com.mg.common.metadata.service.MetaDataQueryService;
-import com.mg.common.shiro.service.RoleCacheService;
 import com.mg.common.upload.service.UploadService;
 import com.mg.common.upload.vo.UploadBean;
 import com.mg.common.user.service.UserService;
-import com.mg.framework.entity.metadata.MExpressGroupEntity;
-import com.mg.framework.entity.metadata.MObjectEntity;
-import com.mg.framework.log.Constants;
-import com.mg.framework.utils.WebUtil;
 import com.mg.common.utils.MD5;
 import com.mg.framework.entity.vo.PageTableVO;
+import com.mg.framework.log.Constants;
 import com.mg.framework.utils.JsonResponse;
 import com.mg.framework.utils.UserHolder;
+import com.mg.framework.utils.WebUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.session.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
@@ -39,12 +32,6 @@ public class UserController {
     private UserService userService;
     @Autowired
     private HttpServletRequest req;
-    @Autowired
-    MetaDataQueryService metaDataQueryService;
-    @Autowired
-    MetaDataExpressService metaDataExpressService;
-    @Autowired
-    RoleCacheService roleCacheService;
     @Autowired
     private UploadService uploadService;
     @Autowired
@@ -170,19 +157,6 @@ public class UserController {
         }
         return JsonResponse.success(user);
     }
-    /**
-     * 获取某一个人的是否拥有某个角色
-     */
-    @ResponseBody
-    @RequestMapping("/hasRole")
-    public String hasRole() {
-        String jsonString = WebUtil.getJsonBody(req);
-
-        RoleEntity roleEntity = JSON.parseObject(jsonString, RoleEntity.class);
-
-        boolean hasRole = roleCacheService.hasAnyRole(SecurityUtils.getSubject(),roleEntity.getName());
-        return JsonResponse.success(hasRole, null);
-    }
 
     /**
      * 分页查询用户登录帐号
@@ -226,25 +200,6 @@ public class UserController {
         userService.delete(id);
 
         return JsonResponse.success(null, null);
-    }
-
-    @RequestMapping(value = "/createUser", method = RequestMethod.POST)
-    @ResponseBody
-    public String createUser(String objId) {
-        String jsonString = WebUtil.getJsonBody(req);
-        MExpressGroupEntity express = JSON.parseObject(jsonString, MExpressGroupEntity.class);
-
-        MObjectEntity metaObject = metaDataQueryService.findMObjectById(objId);
-        if (express == null || express.getMatched() == null
-                || express.getMatched().getExpressions() == null
-                || express.getMatched().getExpressions().size() == 0) {
-            express = metaDataExpressService.createBlankExpressGroup(express);
-
-        }
-
-        Integer num = userService.createUser(metaObject, express);
-
-        return JsonResponse.successWithDate(num, "yyyy-MM-dd");
     }
 
     @ResponseBody
