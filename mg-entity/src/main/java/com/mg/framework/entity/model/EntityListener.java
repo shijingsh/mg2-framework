@@ -27,9 +27,9 @@ public class EntityListener {
 		entity.setUpdatedDate(new Date());
 		if(UserHolder.getLoginUser()!=null){
 			entity.setCreatedById(UserHolder.getLoginUserId());
-			entity.setCreatedName(UserHolder.getLoginUserName());
+			//entity.setCreatedName(UserHolder.getLoginUserName());
 			entity.setUpdatedById(UserHolder.getLoginUserId());
-			entity.setUpdatedName(UserHolder.getLoginUserName());
+			//entity.setUpdatedName(UserHolder.getLoginUserName());
 		}
 	}
 
@@ -44,7 +44,7 @@ public class EntityListener {
 		entity.setUpdatedDate(new Date());
 		if(UserHolder.getLoginUser()!=null){
 			entity.setUpdatedById(UserHolder.getLoginUserId());
-			entity.setUpdatedName(UserHolder.getLoginUserName());
+			//entity.setUpdatedName(UserHolder.getLoginUserName());
 		}
 	}
 

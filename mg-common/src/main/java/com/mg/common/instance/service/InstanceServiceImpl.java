@@ -2,11 +2,11 @@ package com.mg.common.instance.service;
 
 import com.mg.common.entity.QInstanceEntity;
 import com.mg.framework.utils.StatusEnum;
-import com.mysema.query.jpa.impl.JPAQuery;
 import com.mg.common.context.MgServerContext;
 import com.mg.common.entity.InstanceEntity;
 import com.mg.common.instance.dao.InstanceDao;
 import com.mg.framework.entity.vo.PageTableVO;
+import com.querydsl.jpa.impl.JPAQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,7 +30,7 @@ public class InstanceServiceImpl implements InstanceService {
      * @return
      */
     public InstanceEntity findInstanceById(String id) {
-        return instanceDao.findOne(id);
+        return instanceDao.getOne(id);
     }
 
     /**

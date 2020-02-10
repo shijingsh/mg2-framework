@@ -4,8 +4,6 @@ import com.mg.framework.sys.JPAImprovedNamingStrategy;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.cfg.Environment;
 import org.hibernate.dialect.Dialect;
-import org.hibernate.tool.hbm2ddl.DatabaseMetadata;
-import org.hibernate.tool.hbm2ddl.SchemaUpdateScript;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
@@ -74,7 +72,7 @@ public class HibernateDDLGenerator {
             configuration.addAnnotatedClass(Class.forName(meta.getClassMetadata().getClassName()));
         }
 //        new HibernateDDLGenerator().execute(Dialect.getDialect().);
-        try {
+/*        try {
             Connection con = DriverManager.getConnection(url, username, password);
             configuration.setNamingStrategy(new JPAImprovedNamingStrategy());
             configuration.buildMappings();
@@ -87,7 +85,7 @@ public class HibernateDDLGenerator {
         } catch (SQLException se) {
             System.out.println("数据库连接失败！");
             se.printStackTrace();
-        }
+        }*/
     }
 
 //    private void execute(Class<?>... classes) {

@@ -2,7 +2,7 @@ package com.mg.common.instance.dao;
 
 import com.mg.common.entity.InstanceEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.querydsl.QueryDslPredicateExecutor;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
 import java.util.List;
 
@@ -11,7 +11,7 @@ import java.util.List;
  */
 public interface InstanceDao extends
         JpaRepository<InstanceEntity, String>,
-        QueryDslPredicateExecutor<InstanceEntity> {
+        QuerydslPredicateExecutor<InstanceEntity> {
 
     List<InstanceEntity> findInstanceByName(String name);
 

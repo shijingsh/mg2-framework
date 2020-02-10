@@ -1,8 +1,8 @@
 package com.mg.common.utils;
 
-import com.mysema.query.types.Predicate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import javax.persistence.criteria.Predicate;
 
 public interface BaseService<T> {
     T save(T t);

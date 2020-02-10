@@ -1,6 +1,6 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <parent>
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<parent>
         <artifactId>mg2-framework</artifactId>
         <groupId>com.github.shijingsh</groupId>
         <version>1.0.0</version>
@@ -49,7 +49,7 @@
                                 target/generated-sources/java
                             </outputDirectory>
                             <processor>
-                                com.mysema.query.apt.jpa.JPAAnnotationProcessor
+                                com.querydsl.apt.jpa.JPAAnnotationProcessor
                             </processor>
                             <!--<showWarnings>true</showWarnings>-->
                             <logOnlyOnError>true</logOnlyOnError>

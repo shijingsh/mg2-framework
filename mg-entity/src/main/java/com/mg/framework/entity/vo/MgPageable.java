@@ -5,6 +5,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 分页查询抽象类
@@ -93,24 +95,24 @@ public abstract class MgPageable implements Serializable {
             if ("desc".equals(getDir())) {
                 direction = Sort.Direction.DESC;
             }
-            sort = new Sort(direction, getSort());
+            sort = Sort.by(direction,getSort());
         }
         int page = getPageNo();
         if (page >= 1) {
             //分页从0开始
             page = page - 1;
         }
-        return new PageRequest(page, getPageSize(), sort);
+        return PageRequest.of(page, getPageSize(), sort);
     }
 
     public PageRequest createPageRequest(Sort.Order... orders) {
-        Sort sort = new Sort(orders);
+        Sort sort = Sort.by(orders);
 
         int page = getPageNo();
         if (page >= 1) {
             //分页从0开始
             page = page - 1;
         }
-        return new PageRequest(page, getPageSize(), sort);
+        return PageRequest.of(page, getPageSize(), sort);
     }
 }

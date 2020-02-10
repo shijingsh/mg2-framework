@@ -1,10 +1,9 @@
 package com.mg.common.utils;
 
-import com.mysema.query.types.Predicate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-
+import com.querydsl.core.types.Predicate;
 /**
  * service基类
  * Created by kf on 2016/11/8.
@@ -23,11 +22,11 @@ public abstract class BaseServiceImpl<T> {
     }
 
     public T get(String id){
-        return baseDao.findOne(id);
+        return baseDao.getOne(id);
     }
 
     public void delete(String id){
-         baseDao.delete(id);
+         baseDao.deleteById(id);
     }
 
     public void delete(T t){

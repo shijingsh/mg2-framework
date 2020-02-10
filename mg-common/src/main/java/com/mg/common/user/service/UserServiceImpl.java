@@ -3,14 +3,13 @@ package com.mg.common.user.service;
 import com.alibaba.fastjson.JSONObject;
 import com.mg.common.entity.QUserEntity;
 import com.mg.common.entity.UserEntity;
+import com.mg.common.user.dao.UserDao;
 import com.mg.common.user.vo.ThirdUserVo;
-import com.mg.common.utils.MD5;
+import com.mg.framework.entity.vo.PageTableVO;
 import com.mg.framework.utils.StatusEnum;
 import com.mg.framework.utils.UserHolder;
-import com.mysema.query.jpa.impl.JPAQuery;
-import com.mysema.query.types.expr.BooleanExpression;
-import com.mg.common.user.dao.UserDao;
-import com.mg.framework.entity.vo.PageTableVO;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.impl.JPAQuery;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -89,7 +88,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserEntity saveInitUserPassWord(String userId) {
 
-        UserEntity userEntity = userDao.findOne(userId);
+        UserEntity userEntity = userDao.getOne(userId);
         //userRuleService.initUser(userEntity, true);
         userDao.save(userEntity);
         return userEntity;
@@ -98,7 +97,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void delete(String userId) {
 
-        UserEntity userEntity = userDao.findOne(userId);
+        UserEntity userEntity = userDao.getOne(userId);
         userDao.delete(userEntity);
     }
     public Long findCount(PageTableVO pageTableVO) {
@@ -201,7 +200,7 @@ public class UserServiceImpl implements UserService {
         if (StringUtils.isBlank(id)) {
             return null;
         }
-        return userDao.findOne(id);
+        return userDao.getOne(id);
      }
 
     /**

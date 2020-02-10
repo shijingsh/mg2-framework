@@ -32,20 +32,15 @@ public abstract class BaseEntity implements java.io.Serializable{
      * 主键ID
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE, generator = "TableStringGenerator")
-    @GenericGenerator(name = "TableStringGenerator", strategy = "com.mg.framework.entity.model.TableStringGenerator", parameters = {
-//            @org.hibernate.annotations.Parameter(name = "format", value = "ID%1$05d"),
-            @org.hibernate.annotations.Parameter(name = "format", value = "%1$d"),
-            @org.hibernate.annotations.Parameter(name = org.hibernate.id.enhanced.TableGenerator.CONFIG_PREFER_SEGMENT_PER_ENTITY, value = "true"),
-            @org.hibernate.annotations.Parameter(name = org.hibernate.id.enhanced.TableGenerator.TABLE_PARAM, value = "mg_id_generator"),
-            @org.hibernate.annotations.Parameter(name = org.hibernate.id.enhanced.TableGenerator.SEGMENT_COLUMN_PARAM, value = "gen_name"),
-//            @org.hibernate.annotations.Parameter(name = TableGenerator.SEGMENT_VALUE_PARAM, value = "USER_PK"),
-            @org.hibernate.annotations.Parameter(name = org.hibernate.id.enhanced.TableGenerator.VALUE_COLUMN_PARAM, value = "gen_value"),
-            @org.hibernate.annotations.Parameter(name = org.hibernate.id.enhanced.TableGenerator.INITIAL_PARAM, value = "500000"),
-            @org.hibernate.annotations.Parameter(name = org.hibernate.id.enhanced.TableGenerator.INCREMENT_PARAM, value = "50"),
-            @org.hibernate.annotations.Parameter(name = org.hibernate.id.enhanced.TableGenerator.OPT_PARAM, value = "pooled")
-    })
-    // 参考：http://www.ibm.com/developerworks/cn/java/j-lo-tablegenerator/index.html
+    @GeneratedValue(strategy = GenerationType.TABLE, generator="payablemoney_gen")
+    @TableGenerator(name = "pk_gen",
+            table="mg_generator",
+            pkColumnName="gen_name",
+            valueColumnName="gen_value",
+            pkColumnValue="PAYABLEMOENY_PK",
+            initialValue=500000,
+            allocationSize=50
+    )
     @Column(length = 30)
     protected String id;
 
@@ -75,11 +70,7 @@ public abstract class BaseEntity implements java.io.Serializable{
      */
     @JSONField(serialize = false, deserialize = false)
     protected Date updatedDate;
-    @JSONField(serialize = false, deserialize = false)
-    protected String createdName;
-    @JSONField(serialize = false, deserialize = false)
-    protected String updatedName;
-    
+
 
     public String getId() {
         return id;
@@ -146,22 +137,6 @@ public abstract class BaseEntity implements java.io.Serializable{
         if (getId() != null ? !getId().equals(that.getId()) : that.getId() != null) return false;
 
         return true;
-    }
-
-    public String getCreatedName() {
-        return createdName;
-    }
-
-    public void setCreatedName(String createdName) {
-        this.createdName = createdName;
-    }
-
-    public String getUpdatedName() {
-        return updatedName;
-    }
-
-    public void setUpdatedName(String updatedName) {
-        this.updatedName = updatedName;
     }
 
     @Override

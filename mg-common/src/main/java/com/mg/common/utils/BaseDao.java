@@ -1,7 +1,7 @@
 package com.mg.common.utils;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.querydsl.QueryDslPredicateExecutor;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
 /**
  * 数据访问层基类
@@ -9,5 +9,5 @@ import org.springframework.data.querydsl.QueryDslPredicateExecutor;
  */
 public interface BaseDao<T> extends
         JpaRepository<T, String>,
-        QueryDslPredicateExecutor<T> {
+        QuerydslPredicateExecutor<T> {
 }

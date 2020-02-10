@@ -32,18 +32,16 @@ public class TableStringGenerator extends TableGenerator {
     private Properties defaultParams;
     private Dialect defaultDialet;
 
-    @Override
     public void configure(Type type, Properties params, Dialect dialect)
             throws MappingException {
         // 如果这里写成super.configure(type, params, dialect);会造成死循环
         // 因为TableGenerator默认Integer类型主键
         this.defaultParams = params;
         this.defaultDialet = dialect;
-        super.configure(new IntegerType(), params, dialect);
+        //super.configure(new IntegerType(), params, dialect);
 //        format = params.getProperty("format");
     }
 
-    @Override
     public synchronized Serializable generate(SessionImplementor session, Object obj) {
 //        Serializable generated = super.generate(session, obj);
 //        if(generated instanceof Number) {
@@ -92,7 +90,7 @@ public class TableStringGenerator extends TableGenerator {
             TableGenerator tableGenerator = multiTenantTableGenerator.get(instanceSeqId);
             if(tableGenerator == null) {
                 tableGenerator = new TableGenerator();
-                tableGenerator.configure(new IntegerType(), defaultParams, defaultDialet);
+                //tableGenerator.configure(new IntegerType(), defaultParams, defaultDialet);
                 multiTenantTableGenerator.put(instanceSeqId, tableGenerator);
                 //logger.info("创建{}的主键生成器。", instanceSeqId);
             }
