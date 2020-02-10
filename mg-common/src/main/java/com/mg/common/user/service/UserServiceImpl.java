@@ -72,7 +72,7 @@ public class UserServiceImpl implements UserService {
                 qUserEntity.loginName.eq(loginName),
                 qUserEntity.password.eq(password)
         );
-        List<UserEntity> users = query.list(qUserEntity);
+        List<UserEntity> users = query.fetch();
 
         if (users == null || users.isEmpty()) {
             return null;
@@ -114,9 +114,10 @@ public class UserServiceImpl implements UserService {
         }
 
         JPAQuery query = new JPAQuery(entityManager);
-        Long totalNum = query.from(entity).where(
+        query.from(entity).where(
                 ex
-        ).count();
+        );
+        Long totalNum = query.fetchCount();
 
         return totalNum;
     }
@@ -139,11 +140,11 @@ public class UserServiceImpl implements UserService {
         }
 
         JPAQuery query = new JPAQuery(entityManager);
-        List<UserEntity> list = query.from(entity)
+        query.from(entity)
                 .where(
                         ex
-                ).offset(offset).limit(limit)
-                .list(entity);
+                ).offset(offset).limit(limit);
+        List<UserEntity> list = query.fetch();
         Long totalCount = findCount(pageTableVO);
         PageTableVO vo = new PageTableVO();
         vo.setRowData(list);
@@ -182,10 +183,11 @@ public class UserServiceImpl implements UserService {
 
 
         JPAQuery query = new JPAQuery(entityManager);
-        return query.from(user)
+        query.from(user)
                 .where(
                         user.name.in(userNames)
-                ).list(user);
+                );
+        return query.fetch();
 
     }
 
@@ -288,7 +290,7 @@ public class UserServiceImpl implements UserService {
                     qUserEntity.name.like("%" + name + "%")
             );
         }
-        return query.list(qUserEntity);
+        return query.fetch();
     }
 
 
@@ -305,12 +307,9 @@ public class UserServiceImpl implements UserService {
 
         query.from(qUserEntity);
         query.where(
-                BooleanExpression.allOf(
-                        qUserEntity.loginName.in(userNames),
-                        qUserEntity.status.eq(StatusEnum.STATUS_VALID)
-                )
+                qUserEntity.loginName.in(userNames).and(qUserEntity.status.eq(StatusEnum.STATUS_VALID))
         );
-        return query.list(qUserEntity);
+        return query.fetch();
     }
 
     /**
@@ -325,12 +324,8 @@ public class UserServiceImpl implements UserService {
         JPAQuery query = getQuery();
 
         query.from(qUserEntity);
-        query.where(
-                BooleanExpression.allOf(
-                        qUserEntity.id.in(userIds)
-                )
-        );
-        return query.list(qUserEntity);
+        query.where(qUserEntity.id.in(userIds));
+        return query.fetch();
     }
 
     protected JPAQuery getQuery() {

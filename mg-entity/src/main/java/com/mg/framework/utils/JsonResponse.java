@@ -130,6 +130,10 @@ public class JsonResponse {
     public synchronized static String success(Object obj, boolean isRefDetect, String[] filterPropNames, boolean isCamelToUnderline) {
         ResponseBody body = new ResponseBody(0, "", obj);
         SerializeFilter filter;
+        if(filterPropNames==null){
+            filterPropNames = new String[1];
+            filterPropNames[0] = "hibernateLazyInitializer";
+        }
         if(isCamelToUnderline) {
             filter = new FastjsonFilter(filterPropNames);
         }
@@ -194,6 +198,10 @@ public class JsonResponse {
     }
     public static String toJson(Object obj,boolean isRefDetect, String[] filterPropNames,boolean isCamelToUnderline) {
         SerializeFilter filter;
+        if(filterPropNames==null){
+            filterPropNames = new String[1];
+            filterPropNames[0] = "hibernateLazyInitializer";
+        }
         if (isCamelToUnderline) {
             filter = new FastjsonFilter(filterPropNames);
         } else {

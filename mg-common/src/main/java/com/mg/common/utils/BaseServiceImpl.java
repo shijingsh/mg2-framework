@@ -3,7 +3,9 @@ package com.mg.common.utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+
 import com.querydsl.core.types.Predicate;
+
 /**
  * service基类
  * Created by kf on 2016/11/8.

@@ -48,7 +48,7 @@ public abstract class BaseEntity implements java.io.Serializable{
     /**
      * 创建实体对象的操作员ID
      */
-    @Column(length = 30)
+    @Column(name = "created_by_id",length = 30)
     @JSONField(serialize = false, deserialize = false)
     protected String createdById;
 
@@ -56,12 +56,13 @@ public abstract class BaseEntity implements java.io.Serializable{
      * 创建实体对象的时间
      */
     @JSONField(serialize = false, deserialize = false)
+    @Column(name = "created_date")
     protected Date createdDate;
 
     /**
      * 最后修改实体对象的操作员ID
      */
-    @Column(length = 30)
+    @Column(name = "updated_by_id",length = 30)
     @JSONField(serialize = false, deserialize = false)
     protected String updatedById;
 
@@ -69,6 +70,7 @@ public abstract class BaseEntity implements java.io.Serializable{
      * 最后修改实体对象的时间
      */
     @JSONField(serialize = false, deserialize = false)
+    @Column(name = "updated_date")
     protected Date updatedDate;
 
 

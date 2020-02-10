@@ -90,9 +90,9 @@ public class InstanceServiceImpl implements InstanceService {
         }
 
         JPAQuery query = new JPAQuery(entityManager);
-        List<InstanceEntity> users = query.from(entity)
-                .where(entity.status.eq(StatusEnum.STATUS_VALID)).offset(offset).limit(limit)
-                .list(entity);
+        query.from(entity)
+                .where(entity.status.eq(StatusEnum.STATUS_VALID)).offset(offset).limit(limit);
+        List<InstanceEntity> users = query.fetch();
 
         return users;
     }
@@ -101,7 +101,8 @@ public class InstanceServiceImpl implements InstanceService {
         QInstanceEntity entity = QInstanceEntity.instanceEntity;
 
         JPAQuery query = new JPAQuery(entityManager);
-        Long totalNum = query.from(entity).where(entity.status.eq(StatusEnum.STATUS_VALID)).count();
+        query.from(entity).where(entity.status.eq(StatusEnum.STATUS_VALID));
+        Long totalNum = query.fetchCount();
 
         return totalNum;
     }
