@@ -3,7 +3,7 @@ package com.mg.common.upload.service;
 import com.mg.common.upload.vo.UploadBean;
 import com.mg.framework.sys.PropertyConfigurer;
 import com.mg.framework.utils.UserHolder;
-import org.apache.commons.lang.time.DateFormatUtils;
+import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

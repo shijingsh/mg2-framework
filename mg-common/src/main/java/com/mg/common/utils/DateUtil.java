@@ -1,7 +1,7 @@
 package com.mg.common.utils;
 
 import com.mg.framework.exception.ServiceException;
-import org.apache.commons.lang.time.DateUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -31,7 +31,7 @@ public class DateUtil {
      * timePattern
      */
     public static String timePattern = "HH:mm";
-    
+
     //日期完整格式
     public static String FORMATTER = "yyyy-MM-dd HH:mm:ss";
 
@@ -43,10 +43,10 @@ public class DateUtil {
      */
     public static String getDatePattern() {
         defaultDatePattern = "yyyy-MM-dd";
-        
+
         return defaultDatePattern;
     }
-    
+
     public static String getDateTimePattern() {
         return DateUtil.getDatePattern() + " HH:mm:ss.S";
     }
@@ -110,7 +110,7 @@ public class DateUtil {
 
     /**
      * 取出当前的系统日期
-     * 
+     *
      * @return the current date
      * @throws ParseException
      */
@@ -128,7 +128,7 @@ public class DateUtil {
     }
 
     /**
-     * 转换一个日期类指定格式字符串 
+     * 转换一个日期类指定格式字符串
      * @param aMask 日期格式 如"yyyy-MM-dd"
      * @param aDate 需要转换的日期类
      * @return 转换后的字符串
@@ -151,7 +151,7 @@ public class DateUtil {
      * This method generates a string representation of a date based
      * on the System Property 'dateFormat'
      * in the format you specify on input
-     * 
+     *
      * @param aDate A date to convert
      * @return a string representation of the date
      */
@@ -164,7 +164,7 @@ public class DateUtil {
     }
     /**
      * This method converts a String to a date using the datePattern
-     * 
+     *
      * @param strDate the date to convert (in format MM/dd/yyyy)
      * @return a date object
      *
@@ -182,12 +182,12 @@ public class DateUtil {
             log.error("Could not convert '" + strDate
                       + "' to a date, throwing exception");
             pe.printStackTrace();
-                    
+
         }
 
         return aDate;
     }
-    
+
     /**
      * 增加或减少天数
      *
@@ -206,7 +206,7 @@ public class DateUtil {
 //        calendar.set(Calendar.MILLISECOND, 0);
         return calendar.getTime();
     }
-    
+
     /**
      * 增加或减少月份
      *
@@ -236,7 +236,7 @@ public class DateUtil {
         calendar.add(Calendar.YEAR, year);
         return calendar.getTime();
     }
-    
+
 
     /**
      * 取得一年前当月的第一天
@@ -253,7 +253,7 @@ public class DateUtil {
         calendar.set(Calendar.DAY_OF_MONTH, 1);
         return calendar.getTime();
     }
-    
+
     /**
      * 转换字符串日期格式,比如从"yyyy-MM-dd" to "yyyy/MM/dd"
      * @param sDate 源字符串日期
@@ -267,7 +267,7 @@ public class DateUtil {
     	try {
 			Date date = convertStringToDate(sMask, sDate);
 			retStr = getDateTime(dMask, date);
-			
+
 		} catch (Exception e) {
 			log.warn(e.getMessage());
 			return "";
@@ -275,7 +275,7 @@ public class DateUtil {
     	//getDateTime
     	return retStr;
     }
-    
+
     /**
      * 比较两个日期的先后
      * @param date1 日期1
@@ -286,18 +286,18 @@ public class DateUtil {
     {
     	return date1.compareTo(date2);
     }
-    
+
     /**
      * 比较两个日期的先后
      * @param date1 日期1 "yyyy-MM-dd"
      * @param date2 日期2 "yyyy-MM-dd"
      * @param mask 格式"yyyy-MM-dd" "yyyy/MM/dd"
      * @return '1' 日期1>日期2<br> '-1' 日期2>日期1<br> '0' 日期1=日期2
-     * @throws ParseException 
+     * @throws ParseException
      */
     public static int compareDate(String date1, String date2, String mask) throws ParseException
     {
-    	
+
 		Date d1 = convertStringToDate(mask, date1);
 		Date d2 = convertStringToDate(mask, date2);
 		if(DateUtils.isSameDay(d1, d2)){
@@ -305,7 +305,7 @@ public class DateUtil {
 		}
     	return compareDate(d1, d2);
     }
-    
+
     /**
      * 取得某月的最后一天
      * @param date1 yyyy/MM/dd
@@ -325,11 +325,11 @@ public class DateUtil {
             throw new ServiceException(e.getMessage());
         }
     }
-    
-    
+
+
     /**
 	 * 判断日期是否为周末(周六周日)
-	 * 
+	 *
 	 * @param date1
 	 *            yyyy-MM-dd
 	 * @return boolean 是否为周末(false:否,true:是)
@@ -352,7 +352,7 @@ public class DateUtil {
 			// 返回不是周末
 			return false;
 		}
-		
+
 	}
 
 

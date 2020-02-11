@@ -12,7 +12,7 @@ import com.mg.common.user.service.SmsCodeService;
 import com.mg.framework.sys.PropertyConfigurer;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.service.spi.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;

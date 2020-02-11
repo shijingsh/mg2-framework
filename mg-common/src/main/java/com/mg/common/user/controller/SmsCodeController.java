@@ -4,7 +4,7 @@ import com.mg.common.components.SmsService;
 import com.mg.common.entity.SmsCodeEntity;
 import com.mg.common.user.service.SmsCodeService;
 import com.mg.framework.utils.JsonResponse;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.service.spi.ServiceException;

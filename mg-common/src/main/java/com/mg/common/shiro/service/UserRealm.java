@@ -8,7 +8,7 @@ import com.mg.common.user.service.UserService;
 import com.mg.framework.log.Constants;
 import com.mg.framework.utils.StatusEnum;
 import com.mg.framework.utils.UserHolder;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
