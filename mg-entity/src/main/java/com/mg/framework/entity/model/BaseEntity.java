@@ -32,23 +32,16 @@ public abstract class BaseEntity implements java.io.Serializable{
      * 主键ID
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE, generator="payablemoney_gen")
-    @TableGenerator(name = "pk_gen",
-            table="mg_generator",
-            pkColumnName="gen_name",
-            valueColumnName="gen_value",
-            pkColumnValue="PAYABLEMOENY_PK",
-            initialValue=500000,
-            allocationSize=50
-    )
-    @Column(length = 30)
+    @GeneratedValue(generator = "system-uuid", strategy = GenerationType.IDENTITY)
+    @GenericGenerator(name = "system-uuid", strategy = "uuid")
+    @Column(length = 32)
     protected String id;
 
 
     /**
      * 创建实体对象的操作员ID
      */
-    @Column(name = "created_by_id",length = 30)
+    @Column(name = "created_by_id",length = 32)
     @JSONField(serialize = false, deserialize = false)
     protected String createdById;
 
@@ -62,7 +55,7 @@ public abstract class BaseEntity implements java.io.Serializable{
     /**
      * 最后修改实体对象的操作员ID
      */
-    @Column(name = "updated_by_id",length = 30)
+    @Column(name = "updated_by_id",length = 32)
     @JSONField(serialize = false, deserialize = false)
     protected String updatedById;
 
