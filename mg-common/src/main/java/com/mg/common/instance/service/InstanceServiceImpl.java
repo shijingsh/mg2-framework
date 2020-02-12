@@ -30,7 +30,7 @@ public class InstanceServiceImpl implements InstanceService {
      * @return
      */
     public InstanceEntity findInstanceById(String id) {
-        return instanceDao.getOne(id);
+        return instanceDao.findById(id).get();
     }
 
     /**

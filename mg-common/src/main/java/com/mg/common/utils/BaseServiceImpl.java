@@ -24,7 +24,7 @@ public abstract class BaseServiceImpl<T> {
     }
 
     public T get(String id){
-        return baseDao.getOne(id);
+        return baseDao.findById(id).get();
     }
 
     public void delete(String id){

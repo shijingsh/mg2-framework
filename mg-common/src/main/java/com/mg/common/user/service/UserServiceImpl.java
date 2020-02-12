@@ -198,7 +198,7 @@ public class UserServiceImpl implements UserService {
         if (StringUtils.isBlank(id)) {
             return null;
         }
-        return userDao.getOne(id);
+        return userDao.findById(id).get();
      }
 
     /**
