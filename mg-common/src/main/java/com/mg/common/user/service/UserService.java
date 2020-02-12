@@ -79,11 +79,15 @@ public interface UserService {
     void insertBussinessVariables_(List<Map<String,Object>> datas);
 
     /**
-     * 修改员工信息， 比如密码 by huan
+     * 修改员工信息
      * @param user
-     *        需要修改的员工对象
      */
     void updateUser(UserEntity user);
+
+    /**
+     * 修改员工信息最后登录时间
+     */
+    void updateUserLastLoginDate(UserEntity user);
 
     /**
      * 模糊检索人员列表by huan

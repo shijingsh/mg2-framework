@@ -102,6 +102,9 @@ public abstract class MgPageable implements Serializable {
             //分页从0开始
             page = page - 1;
         }
+        if(sort==null){
+            return PageRequest.of(page, getPageSize());
+        }
         return PageRequest.of(page, getPageSize(), sort);
     }
 

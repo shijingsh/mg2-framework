@@ -1,51 +1,41 @@
 package com.mg.framework.sys;
 
-import org.apache.commons.lang3.StringUtils;
-import org.hibernate.cfg.ImprovedNamingStrategy;
+import org.hibernate.boot.model.naming.Identifier;
+import org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl;
+import org.hibernate.engine.jdbc.env.spi.JdbcEnvironment;
+import org.hibernate.internal.util.StringHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Locale;
 
-public class JPAImprovedNamingStrategy extends ImprovedNamingStrategy {
+public class JPAImprovedNamingStrategy extends PhysicalNamingStrategyStandardImpl {
 
     protected Logger logger = LoggerFactory.getLogger(getClass());
 
-    //表名的前缀 和 后缀
-    private String tablePrefix = "t_";
-    private String tableSuffix = "";
+    public String propertyToColumnName(String propertyName) {
+        return addUnderscores(StringHelper.unqualify(propertyName));
+    }
 
-    //外键的 前缀 和 后缀
-    private String foreignKeyColumnPrefix = "fk_";
-    private String foreignKeyColumnSuffix = "";
+    protected static String addUnderscores(String name) {
+        StringBuilder buf = new StringBuilder(name.replace('.', '_'));
 
-    private boolean isRemoveLastWord = true;
-
-    @Override
-    public String classToTableName(String className) {
-        String rawTableName = super.classToTableName(className);
-
-        if (isRemoveLastWord) {
-            int pos = StringUtils.lastIndexOf(rawTableName, '_');
-            return tablePrefix + StringUtils.substring(rawTableName, 0, pos) + tableSuffix;
+        for(int i = 1; i < buf.length() - 1; ++i) {
+            if (Character.isLowerCase(buf.charAt(i - 1)) && Character.isUpperCase(buf.charAt(i)) && Character.isLowerCase(buf.charAt(i + 1))) {
+                buf.insert(i++, '_');
+            }
         }
 
-        return tablePrefix + rawTableName + tableSuffix;
+        return buf.toString().toLowerCase(Locale.ROOT);
     }
 
-    @Override
-    public String propertyToColumnName(String propertyName) {
-        return super.propertyToColumnName(propertyName);
+    public Identifier toPhysicalColumnName(Identifier name, JdbcEnvironment context) {
+        String columnName = propertyToColumnName(name.getText());
+        return Identifier.toIdentifier(columnName);
     }
 
-    @Override
-    public String collectionTableName(String ownerEntity, String ownerEntityTable, String associatedEntity, String associatedEntityTable, String propertyName) {
-        return super.collectionTableName(ownerEntity, ownerEntityTable, associatedEntity, associatedEntityTable, propertyName);
-    }
-
-
-    @Override
-    public String foreignKeyColumnName(String propertyName, String propertyEntityName, String propertyTableName, String referencedColumnName) {
-        String columnName = foreignKeyColumnPrefix + super.foreignKeyColumnName(propertyName, propertyEntityName, propertyTableName, referencedColumnName);
-        return columnName;
+    public static void main(String args[]){
+        System.out.println(addUnderscores("userId"));
+        System.out.println(StringHelper.unqualify("userId"));
     }
 }

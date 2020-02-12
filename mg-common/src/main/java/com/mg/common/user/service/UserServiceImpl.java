@@ -20,10 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @Transactional(readOnly = true)
@@ -69,8 +66,7 @@ public class UserServiceImpl implements UserService {
         query.from(qUserEntity);
 
         query.where(
-                qUserEntity.loginName.eq(loginName),
-                qUserEntity.password.eq(password)
+                qUserEntity.loginName.eq(loginName).and(qUserEntity.password.eq(password))
         );
         List<UserEntity> users = query.fetch();
 
@@ -270,6 +266,16 @@ public class UserServiceImpl implements UserService {
      */
     @Transactional
     public void updateUser(UserEntity user) {
+        userDao.save(user);
+    }
+
+    /**
+     * 修改员工信息
+     * @param user
+     */
+    @Transactional
+    public void updateUserLastLoginDate(UserEntity user) {
+        user.setLastLoginDate(new Date());
         userDao.save(user);
     }
 

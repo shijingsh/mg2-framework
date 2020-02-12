@@ -69,8 +69,7 @@ public class LoginController {
             return JsonResponse.error(100000, e.getMessage());
         }
         UserEntity user = userService.getUserById(UserHolder.getLoginUserId());
-        user.setLastLoginDate(new Date());
-        userService.updateUser(user);
+        userService.updateUserLastLoginDate(user);
 
         return JsonResponse.success(user, null);
     }
@@ -107,8 +106,7 @@ public class LoginController {
             return JsonResponse.error(100000, e.getMessage());
         }
         UserEntity user = userService.getUserById(UserHolder.getLoginUserId());
-        user.setLastLoginDate(new Date());
-        userService.updateUser(user);
+        userService.updateUserLastLoginDate(user);
 
         return JsonResponse.success(user, null);
     }
@@ -181,8 +179,7 @@ public class LoginController {
                     return JsonResponse.error(100000, e.getMessage());
                 }
                 UserEntity user = userService.getUserById(UserHolder.getLoginUserId());
-                user.setLastLoginDate(new Date());
-                userService.updateUser(user);
+                userService.updateUserLastLoginDate(user);
 
                 return JsonResponse.success(user, null);
             }
