@@ -11,7 +11,7 @@ import java.sql.SQLException;
 
 public class MgDataSource extends DruidDataSource {
     private static Logger logger = LoggerFactory.getLogger(MgDataSource.class);
-    public static final String DEFAULT_DB = "mg_system";
+    public static final String DEFAULT_DB = "mg_xiushang";
     @Override
     public DruidPooledConnection getConnection() throws SQLException {
         DruidPooledConnection conn = super.getConnection();
