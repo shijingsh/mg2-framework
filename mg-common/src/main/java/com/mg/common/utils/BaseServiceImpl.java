@@ -6,6 +6,8 @@ import org.springframework.data.domain.Pageable;
 
 import com.querydsl.core.types.Predicate;
 
+import java.util.Optional;
+
 /**
  * service基类
  * Created by kf on 2016/11/8.
@@ -24,7 +26,11 @@ public abstract class BaseServiceImpl<T> {
     }
 
     public T get(String id){
-        return baseDao.findById(id).get();
+        Optional<T> optional = baseDao.findById(id);
+        if(optional.isPresent()){
+            return optional.get();
+        }
+        return null;
     }
 
     public void delete(String id){
