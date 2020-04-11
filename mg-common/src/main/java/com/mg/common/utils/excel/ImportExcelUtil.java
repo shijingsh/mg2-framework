@@ -12,15 +12,16 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.*;
 
-/**
- * Created by huan on 15/8/13.
- */
 public class ImportExcelUtil {
-
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public static List<Map<String, Object>> importExcel(String path) throws FileNotFoundException, IOException, InvalidFormatException {
+
+        return importExcel(path,0);
+    }
+
+    public static List<Map<String, Object>> importExcel(String path,int sheetIndex) throws FileNotFoundException, IOException, InvalidFormatException {
 
         Workbook wb = null;
         // 1. 打开excel
@@ -34,7 +35,7 @@ public class ImportExcelUtil {
             fileInputStream.close();
         }
 
-        Sheet sheet = wb.getSheetAt(0);
+        Sheet sheet = wb.getSheetAt(sheetIndex);
 
 
         Map<Integer, String> header = new HashMap<>();
@@ -70,7 +71,6 @@ public class ImportExcelUtil {
         }
         return datas;
     }
-
     /**
      * 将double类型的结果保留两位小数
      * @param score
