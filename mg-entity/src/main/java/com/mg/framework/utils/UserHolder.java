@@ -2,7 +2,6 @@ package com.mg.framework.utils;
 
 import com.mg.common.entity.UserEntity;
 import com.mg.framework.log.Constants;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.session.Session;
 import org.slf4j.Logger;
@@ -25,20 +24,6 @@ public class UserHolder {
         return user;
     }
 
-    /**
-     * 获得当前登录者User
-     */
-    public static String getLoginUserEmployeeId() {
-        Session session = SecurityUtils.getSubject().getSession();
-        UserEntity user = (UserEntity) session.getAttribute(Constants.CURRENT_USER);
-
-        String employeeId = user.getEmployeeId();
-        if(StringUtils.isBlank(employeeId)){
-            return "userId"+user.getId();
-        }
-
-        return employeeId;
-    }
     /**
      * 获得当前登录者的User ID
      */
@@ -73,17 +58,6 @@ public class UserHolder {
     }
 
 
-//    public static String getUserToken() {
-//        Session session = SecurityUtils.getSubject().getSession();
-//        UserEntity user = (UserEntity) session.getAttribute(Constants.CURRENT_USER);
-//        if (user == null) {
-//            return null;
-//        }
-//        return user.getUserToken();
-//    }
-
-
-
     /**
      * 获得当前登录者的User instanceId
      */
@@ -92,11 +66,4 @@ public class UserHolder {
         return session.getAttribute(Constants.TENANT_ID) + "";
     }
 
-    /**
-     * 获得当前登录者的User instanceId tokey
-     */
-//    public static String getLoginUserToken() {
-//        Session session = SecurityUtils.getSubject().getSession();
-//        return session.getAttribute(Constants.TENANT_TOKEN) + "";
-//    }
 }

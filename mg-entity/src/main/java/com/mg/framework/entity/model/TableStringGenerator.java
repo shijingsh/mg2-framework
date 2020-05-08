@@ -6,27 +6,14 @@ import org.hibernate.MappingException;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.engine.spi.SessionImplementor;
 import org.hibernate.id.enhanced.TableGenerator;
-import org.hibernate.type.IntegerType;
 import org.hibernate.type.Type;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-/**
- * HRMS采用了String类型的主键（Primary Key）.
- * <p/>
- * Hibernate可以通过Table方式自动生成数值型主键。基于此之上，根据自己的策略，将数值转换为
- * 字符串类型。
- *
- */
 public class TableStringGenerator extends TableGenerator {
-    private static Logger logger = LoggerFactory.getLogger(TableStringGenerator.class);
-
-//    private String format;
     private Map<String, TableGenerator> multiTenantTableGenerator = new HashMap<>();
     private Type defaultType;
     private Properties defaultParams;
@@ -34,12 +21,8 @@ public class TableStringGenerator extends TableGenerator {
 
     public void configure(Type type, Properties params, Dialect dialect)
             throws MappingException {
-        // 如果这里写成super.configure(type, params, dialect);会造成死循环
-        // 因为TableGenerator默认Integer类型主键
         this.defaultParams = params;
         this.defaultDialet = dialect;
-        //super.configure(new IntegerType(), params, dialect);
-//        format = params.getProperty("format");
     }
 
     public synchronized Serializable generate(SessionImplementor session, Object obj) {
@@ -100,22 +83,4 @@ public class TableStringGenerator extends TableGenerator {
         return id;
     }
 
-//    @Override
-//    public void configure(Type type, Properties params, Dialect dialect) throws MappingException {
-//        type = new LongType();//因为自定义的id是String型,会报错.也可以换成org.hibernate.type.IntegerType
-//        super.configure(type, params, dialect);
-//        format = params.getProperty("format");
-//    }
-//
-//    @Override
-//    public Serializable generate(SessionImplementor session, Object obj) {
-//        Serializable generated = super.generate(session, obj);
-//        if(generated instance of Number) {
-//            if(format == null) {
-//                return String.valueOf(generated);
-//            }
-//            return String.format(format, generated);
-//        }
-//        return generated;
-//    }
 }

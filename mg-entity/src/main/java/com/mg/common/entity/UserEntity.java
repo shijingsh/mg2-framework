@@ -15,7 +15,7 @@ import java.util.List;
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class UserEntity extends ExpandEntity {
 
-    public static final String ADMIN_USER_LOGNAME = "admin";
+    public static final String ADMIN_USER_LOGIN_NAME = "admin";
     /**默认密码*/
     public static String DEFAULT_PASSWORD = "96e79218965eb72c92a549dd5a330112";
     /**登录名 */
@@ -53,7 +53,7 @@ public class UserEntity extends ExpandEntity {
     /**
      * 所属员工
      */
-    private String employeeId;
+    //private String employeeId;
 
     /**
      * 纬度
@@ -192,19 +192,11 @@ public class UserEntity extends ExpandEntity {
         this.loginName = loginName;
     }
 
-    public String getEmployeeId() {
-        return employeeId;
-    }
-
-    public void setEmployeeId(String employeeId) {
-        this.employeeId = employeeId;
-    }
-
     public  Boolean isAdmin(){
         if(StringUtils.isBlank(loginName)){
             return false;
         }
-        return loginName.equals(ADMIN_USER_LOGNAME);
+        return loginName.equals(ADMIN_USER_LOGIN_NAME);
     }
 
     public String getMobile() {
