@@ -26,14 +26,12 @@ public class UserRealm extends AuthorizingRealm {
     @Autowired
     private UserService userService;
 
-    public UserRealm() {
-        super();
-        setName("userRealm");
-
-        setAuthenticationCacheName(AuthorizationHelper.SHIRO_CACHE_NAME);
-
-        //处理权限比较方法, 自定义比较方法
-        setPermissionResolver(new WildcardPermissionExResolver());
+    /**
+     * 清理权限缓存
+     */
+    public void clearCachedAuthorization() {
+        //清空权限缓存
+        clearCachedAuthorizationInfo(SecurityUtils.getSubject().getPrincipals());
     }
 
     /**
@@ -72,16 +70,16 @@ public class UserRealm extends AuthorizingRealm {
         if(user.getStatus() == StatusEnum.STATUS_INVALID) {
             throw new LockedAccountException("账号已失效，请联系管理员。");
         }
-        Session session = SecurityUtils.getSubject().getSession();
-        session.setAttribute(Constants.CURRENT_USER, user);
+        //Session session = SecurityUtils.getSubject().getSession();
+        //session.setAttribute(Constants.CURRENT_USER, user);
 
-        SimpleAuthenticationInfo authenticationInfo = new SimpleAuthenticationInfo(username, user.getPassword().toCharArray(), getName());
+        SimpleAuthenticationInfo authenticationInfo = new SimpleAuthenticationInfo(user, user.getPassword().toCharArray(), getName());
         //清空集合和清空授权, 防止用户非法退出登录,
         //而保存本地的cache尚未清空, 导致下次同用户无法登录查看权限
-        clearCachedAuthorizationInfo(authenticationInfo.getPrincipals());
+        //clearCachedAuthorizationInfo(authenticationInfo.getPrincipals());
 
         //清除掉之前的权限信息以便重新加载
-        this.clearCachedAuthorizationInfo(new SimplePrincipalCollection(username, "userRealm"));
+        //this.clearCachedAuthorizationInfo(new SimplePrincipalCollection(username, "userRealm"));
 
         return authenticationInfo;
     }

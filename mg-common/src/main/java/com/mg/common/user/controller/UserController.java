@@ -222,4 +222,16 @@ public class UserController {
 
         return JsonResponse.success(userEntity, null);
     }
+
+    /**
+     * 获取用户
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping("/info")
+    public String info() {
+        UserEntity userEntity = UserHolder.getLoginUser();
+
+        return JsonResponse.success(userEntity, null);
+    }
 }
