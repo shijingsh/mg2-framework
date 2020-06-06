@@ -5,6 +5,7 @@ import com.mg.common.entity.QUserEntity;
 import com.mg.common.entity.UserEntity;
 import com.mg.common.user.dao.UserDao;
 import com.mg.common.user.vo.ThirdUserVo;
+import com.mg.common.utils.MD5;
 import com.mg.framework.entity.vo.PageTableVO;
 import com.mg.framework.utils.StatusEnum;
 import com.mg.framework.utils.UserHolder;
@@ -85,7 +86,8 @@ public class UserServiceImpl implements UserService {
     public UserEntity saveInitUserPassWord(String userId) {
 
         UserEntity userEntity = userDao.getOne(userId);
-        //userRuleService.initUser(userEntity, true);
+        userEntity.setPassword(MD5.GetMD5Code("123456"));
+
         userDao.save(userEntity);
         return userEntity;
     }
@@ -103,10 +105,12 @@ public class UserServiceImpl implements UserService {
         UserEntity userEntity = JSONObject.toJavaObject(paramObject, UserEntity.class);
 
         BooleanExpression ex = entity.status.eq(StatusEnum.STATUS_VALID);
-        if(StringUtils.isNotBlank(userEntity.getLoginName())){
-            ex = ex.and(entity.loginName.like("%" + userEntity.getLoginName() + "%"));
-        }else if(StringUtils.isNotBlank(userEntity.getName())){
-            ex = ex.and(entity.name.like("%"+userEntity.getName()+"%"));
+        if(userEntity!= null){
+            if(StringUtils.isNotBlank(userEntity.getLoginName())){
+                ex = ex.and(entity.loginName.like("%" + userEntity.getLoginName() + "%"));
+            }else if(StringUtils.isNotBlank(userEntity.getName())){
+                ex = ex.and(entity.name.like("%"+userEntity.getName()+"%"));
+            }
         }
 
         JPAQuery query = new JPAQuery(entityManager);
@@ -129,10 +133,12 @@ public class UserServiceImpl implements UserService {
         UserEntity userEntity = JSONObject.toJavaObject(paramObject,UserEntity.class);
 
         BooleanExpression ex = entity.status.eq(StatusEnum.STATUS_VALID);
-        if(StringUtils.isNotBlank(userEntity.getLoginName())){
-            ex = ex.and(entity.loginName.like("%" + userEntity.getLoginName() + "%"));
-        }else if(StringUtils.isNotBlank(userEntity.getName())){
-            ex = ex.and(entity.name.like("%"+userEntity.getName()+"%"));
+        if(userEntity!= null){
+            if(StringUtils.isNotBlank(userEntity.getLoginName())){
+                ex = ex.and(entity.loginName.like("%" + userEntity.getLoginName() + "%"));
+            }else if(StringUtils.isNotBlank(userEntity.getName())){
+                ex = ex.and(entity.name.like("%"+userEntity.getName()+"%"));
+            }
         }
 
         JPAQuery query = new JPAQuery(entityManager);

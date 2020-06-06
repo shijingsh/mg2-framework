@@ -14,6 +14,8 @@ public class ResponseBody<T> {
     //成功时的提示
     private String successText;
 
+    private boolean execResult = true;
+
     //返回对象
     private T data;
 
@@ -52,6 +54,14 @@ public class ResponseBody<T> {
 
 	public void setSuccessText(String successText) {
 		this.successText = successText;
+	}
+
+	public boolean isExecResult() {
+		return execResult;
+	}
+
+	public void setExecResult(boolean execResult) {
+		this.execResult = execResult;
 	}
 
 	@Override

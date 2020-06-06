@@ -234,4 +234,16 @@ public class UserController {
 
         return JsonResponse.success(userEntity, null);
     }
+
+    /**
+     * 获取用户
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping("/get")
+    public String get(String id) {
+        UserEntity userEntity = userService.getUserById(id);
+
+        return JsonResponse.success(userEntity, null);
+    }
 }
