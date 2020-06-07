@@ -18,7 +18,7 @@ public class SmsCodeServiceImpl  implements SmsCodeService {
     @Override
     public SmsCodeEntity findByMobileAndSmsCode(String mobile, String smsCode) {
         List<SmsCodeEntity> list = smsCodeDao.findByMobileAndSmsCodeOrderBySendTimeDesc(mobile,smsCode);
-        if(list!=null){
+        if(list!=null && list.size()>0){
             //验证码不能超过10分钟
             SmsCodeEntity smsCodeEntity = list.get(0);
             long distance = (new Date().getTime() - smsCodeEntity.getSendTime().getTime()) / 1000 /60;
