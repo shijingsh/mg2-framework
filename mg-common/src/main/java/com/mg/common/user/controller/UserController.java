@@ -78,7 +78,7 @@ public class UserController {
         if (!StringUtils.equals(psw, pswConfirm)) {
             return JsonResponse.error(1, "两次密码输入不一致，请重新输入");
         }
-        userEntity.setPassword(psw);
+        userEntity.setPassword(MD5.GetMD5Code(psw));
         try {
             userService.updateUser(userEntity);
         } catch (Exception e) {
@@ -150,7 +150,7 @@ public class UserController {
         }
         String code = req.getParameter("code").trim();
         if(smsService.validateCode(user.getMobile(),code)){
-            user.setPassword(userEntity.getPassword());
+            user.setPassword(MD5.GetMD5Code(userEntity.getPassword()));
             userService.updateUser(user);
         }else{
             return JsonResponse.error(100000, "验证码输入错误");

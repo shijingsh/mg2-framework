@@ -9,6 +9,7 @@ import com.mg.common.entity.UserEntity;
 import com.mg.common.instance.service.InstanceService;
 import com.mg.common.user.vo.ThirdUserVo;
 import com.mg.common.utils.HttpClientUtil;
+import com.mg.common.utils.MD5;
 import com.mg.framework.log.Constants;
 import com.mg.framework.sys.PropertyConfigurer;
 import com.mg.framework.utils.WebUtil;
@@ -76,7 +77,7 @@ public class LoginController {
             subject.getSession().setAttribute(Constants.TENANT_ID, instanceEntity.getId());
         }
         try {
-            UsernamePasswordToken token = new UsernamePasswordToken(userEntity.getLoginName(), userEntity.getPassword());
+            UsernamePasswordToken token = new UsernamePasswordToken(userEntity.getLoginName(), MD5.GetMD5Code(userEntity.getPassword()));
             subject.login(token);
         } catch (Exception e) {
             e.printStackTrace();
@@ -113,7 +114,7 @@ public class LoginController {
         }
         try {
             UserEntity userEntity = userService.saveOrGetThirdUser(thirdUserVo);
-            UsernamePasswordToken token = new UsernamePasswordToken(userEntity.getLoginName(), userEntity.getPassword());
+            UsernamePasswordToken token = new UsernamePasswordToken(userEntity.getLoginName(), MD5.GetMD5Code(userEntity.getPassword()));
             subject.login(token);
         } catch (Exception e) {
             e.printStackTrace();

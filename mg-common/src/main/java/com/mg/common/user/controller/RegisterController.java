@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.mg.common.components.SmsService;
 import com.mg.common.entity.UserEntity;
 import com.mg.common.user.service.UserService;
+import com.mg.common.utils.MD5;
 import com.mg.framework.utils.JsonResponse;
 import com.mg.framework.utils.WebUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -46,6 +47,7 @@ public class RegisterController {
         }
         String code = req.getParameter("code").trim();
         if(smsService.validateCode(userEntity.getMobile(),code)){
+            userEntity.setPassword(MD5.GetMD5Code(userEntity.getPassword()));
             userService.updateUser(userEntity);
         }else{
             return JsonResponse.error(100000, "验证码输入错误");

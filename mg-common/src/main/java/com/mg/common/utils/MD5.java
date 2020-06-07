@@ -4,7 +4,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class MD5 {
-	
+
 	 // 全局数组
     private final static String[] strDigits = { "0", "1", "2", "3", "4", "5",
             "6", "7", "8", "9", "a", "b", "c", "d", "e", "f" };
@@ -56,10 +56,10 @@ public class MD5 {
         }
         return resultString;
     }
-    
+
     /**
      * 获取默认密码
-     * @Title: getDefaultPasswd 
+     * @Title: getDefaultPasswd
      * @return
      * @return: String
      */
@@ -67,4 +67,8 @@ public class MD5 {
     	return GetMD5Code("111111");
     }
 
+    public static void main(String args[]){
+       String code = GetMD5Code("123456");
+       System.out.println(code);
+    }
 }

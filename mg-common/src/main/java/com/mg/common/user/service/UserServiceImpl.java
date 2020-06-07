@@ -374,7 +374,7 @@ public class UserServiceImpl implements UserService {
            userEntity.setLoginName(thirdUserVo.getUserId());
            userEntity.setName(thirdUserVo.getUserName());
            userEntity.setHeadPortrait(thirdUserVo.getUserAvatar());
-           userEntity.setPassword(UserEntity.DEFAULT_PASSWORD);
+           userEntity.setPassword(MD5.GetMD5Code(UserEntity.DEFAULT_PASSWORD));
            userEntity.setAccessToken(thirdUserVo.getAccessToken());
 
            userDao.save(userEntity);

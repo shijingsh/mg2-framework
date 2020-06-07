@@ -17,7 +17,7 @@ public class UserEntity extends ExpandEntity {
 
     public static final String ADMIN_USER_LOGIN_NAME = "admin";
     /**默认密码*/
-    public static String DEFAULT_PASSWORD = "96e79218965eb72c92a549dd5a330112";
+    public static String DEFAULT_PASSWORD = "123456";
     /**登录名 */
     private String loginName;
     /**姓名 */
