@@ -91,7 +91,7 @@ public class UserRealm extends AuthorizingRealm {
         }
         SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
 
-        if(user.isAdmin()){
+        if(user.getAdmin()){
             AdminPermission adminPermission = new AdminPermission();
             info.addObjectPermission(adminPermission);
             return info;

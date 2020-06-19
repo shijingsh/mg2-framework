@@ -3,6 +3,7 @@ package com.mg.common.entity;
 import com.mg.framework.utils.StatusEnum;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -15,7 +16,6 @@ import java.util.List;
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class UserEntity extends ExpandEntity {
 
-    public static final String ADMIN_USER_LOGIN_NAME = "admin";
     /**默认密码*/
     public static String DEFAULT_PASSWORD = "123456";
     /**登录名 */
@@ -50,10 +50,6 @@ public class UserEntity extends ExpandEntity {
     @Lob
     @Basic(fetch = FetchType.EAGER)
     private String headPortrait;
-    /**
-     * 所属员工
-     */
-    //private String employeeId;
 
     /**
      * 纬度
@@ -70,6 +66,13 @@ public class UserEntity extends ExpandEntity {
      * 第三方登录token
      */
     private String accessToken;
+
+    /**
+     * 是否管理员
+     */
+    @Column(columnDefinition = "TINYINT")
+    @Type(type = "org.hibernate.type.NumericBooleanType")
+    private Boolean isAdmin = Boolean.FALSE;
     /**
      * 用户的公司实例标识
      */
@@ -192,11 +195,12 @@ public class UserEntity extends ExpandEntity {
         this.loginName = loginName;
     }
 
-    public  Boolean isAdmin(){
-        if(StringUtils.isBlank(loginName)){
-            return false;
-        }
-        return loginName.equals(ADMIN_USER_LOGIN_NAME);
+    public Boolean getAdmin() {
+        return isAdmin;
+    }
+
+    public void setAdmin(Boolean admin) {
+        isAdmin = admin;
     }
 
     public String getMobile() {
