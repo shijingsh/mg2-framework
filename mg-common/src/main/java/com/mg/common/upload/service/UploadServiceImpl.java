@@ -1,6 +1,8 @@
 package com.mg.common.upload.service;
 
+import com.mg.common.upload.vo.UploadBase64;
 import com.mg.common.upload.vo.UploadBean;
+import com.mg.common.utils.Base64Util;
 import com.mg.framework.sys.PropertyConfigurer;
 import com.mg.framework.utils.UserHolder;
 import org.apache.commons.lang3.time.DateFormatUtils;
@@ -138,5 +140,44 @@ public class UploadServiceImpl implements UploadService {
         File file = new File(home + path);
         file.deleteOnExit();
         return true;
+    }
+
+    public List<UploadBean> uploadBase64(UploadBase64 uploadBase64) {
+        List<UploadBean> list = new ArrayList<>();
+        UploadBean uploadBean = new UploadBean();
+        uploadBean.setUserPath(uploadBase64.getUserPath());
+
+        //保存文件到服务器
+
+        File file = getFileSavePath(uploadBean);
+        String key = uploadBase64.getKey();
+        uploadBean.setKey(key);
+
+        StringBuffer sb = new StringBuffer(file.getPath()).append(separator);
+        String str = String.valueOf(Math.round(Math.random() * 1000000));
+        sb.append("mg").append(new Date().getTime()).append(str).append(".jpg");
+
+        try {
+            File f = new File(sb.toString());
+            logger.info("设置上传文件权限");
+            f.setReadable(true,false);
+            f.setWritable(true,false);
+            f.setExecutable(true,false);
+
+            boolean b = Base64Util.Base64ToImage(uploadBase64.getImgStr(),f.getAbsolutePath());
+            logger.info("base64转文件格式成功标志："+b);
+            uploadBean.setFileName(f.getName());
+            uploadBean.setPath(f.getPath());
+            logger.info("file path : {}", file.getPath());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        //返回文件路径
+        uploadBean.setRelativePath(uploadBean.getRelativePath() + uploadBean.getFileName());
+
+        list.add(uploadBean);
+
+        return list;
     }
 }

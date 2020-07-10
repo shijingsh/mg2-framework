@@ -1,5 +1,6 @@
 package com.mg.common.upload.service;
 
+import com.mg.common.upload.vo.UploadBase64;
 import com.mg.common.upload.vo.UploadBean;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
@@ -16,4 +17,6 @@ public interface UploadService {
     Map<String,UploadBean> uploadForMap(MultipartHttpServletRequest mulRequest, String userPath);
 
     boolean removeFile(String path);
+
+    List<UploadBean> uploadBase64(UploadBase64 uploadBase64);
 }
