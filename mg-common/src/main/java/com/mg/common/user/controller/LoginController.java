@@ -114,7 +114,7 @@ public class LoginController {
         }
         try {
             UserEntity userEntity = userService.saveOrGetThirdUser(thirdUserVo);
-            UsernamePasswordToken token = new UsernamePasswordToken(userEntity.getLoginName(), MD5.GetMD5Code(userEntity.getPassword()));
+            UsernamePasswordToken token = new UsernamePasswordToken(userEntity.getLoginName(), userEntity.getPassword());
             subject.login(token);
         } catch (Exception e) {
             e.printStackTrace();
