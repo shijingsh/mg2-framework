@@ -8,6 +8,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.shijingsh</groupId>
     <artifactId>mg-common</artifactId>
+    <version>1.1.0</version>
     <packaging>jar</packaging>
     <name>mg-common</name>
     <url>http://maven.apache.org</url>
