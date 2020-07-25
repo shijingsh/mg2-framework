@@ -8,7 +8,7 @@
   </parent>
   <groupId>com.github.shijingsh</groupId>
   <artifactId>mg2-framework</artifactId>
-  <version>1.0.0</version>
+  <version>1.1.0</version>
   <modules>
     <module>mg-entity</module>
     <module>mg-common</module>
@@ -350,95 +350,6 @@
       <groupId>mysql</groupId>
       <version>5.1.29</version>
     </dependency>
-
-    <!--显示hibernate 的 sql语句 配置文件可启用或禁用 -->
-<!--
-    <dependency>
-      <groupId>org.bgee.log4jdbc-log4j2</groupId>
-      <artifactId>log4jdbc-log4j2-jdbc4.1</artifactId>
-      <version>1.16</version>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.googlecode.log4jdbc</groupId>
-      <artifactId>log4jdbc</artifactId>
-      <version>1.2</version>
-      <scope>runtime</scope>
-      <exclusions>
-        <exclusion>
-          <artifactId>slf4j-api</artifactId>
-          <groupId>org.slf4j</groupId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-
-
-    <dependency>
-      <groupId>org.hamcrest</groupId>
-      <artifactId>hamcrest-all</artifactId>
-      <version>1.3</version>
-    </dependency>
--->
-<!--    <dependency>
-      <groupId>opensymphony</groupId>
-      <artifactId>sitemesh</artifactId>
-      <version>2.4.2</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.velocity</groupId>
-      <artifactId>velocity-tools</artifactId>
-      <version>1.3</version>
-      <exclusions>
-        <exclusion>
-          <groupId>struts</groupId>
-          <artifactId>struts</artifactId>
-        </exclusion>
-        <exclusion>
-          <artifactId>servlet-api</artifactId>
-          <groupId>javax.servlet</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>commons-logging</artifactId>
-          <groupId>commons-logging</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>commons-collections</artifactId>
-          <groupId>commons-collections</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>commons-beanutils</artifactId>
-          <groupId>commons-beanutils</groupId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>asm</groupId>
-      <artifactId>asm</artifactId>
-      <version>3.1</version>
-    </dependency>
-    <dependency>
-      <groupId>cglib</groupId>
-      <artifactId>cglib</artifactId>
-      <version>2.2.2</version>
-    </dependency>
-    <dependency>
-      <groupId>sslext</groupId>
-      <artifactId>sslext</artifactId>
-      <version>1.2-0</version>
-      <exclusions>
-        <exclusion>
-          <groupId>struts</groupId>
-          <artifactId>struts</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-
-    <dependency>
-      <groupId>org.jboss.spec.javax.el</groupId>
-      <artifactId>jboss-el-api_3.0_spec</artifactId>
-      <version>1.0.0.Final</version>
-      <scope>runtime</scope>
-    </dependency>-->
 
     <!-- Querydsl相关包 -->
     <dependency>

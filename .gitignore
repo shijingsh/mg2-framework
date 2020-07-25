@@ -3,6 +3,7 @@ classes/
 .settings/
 META-INF/
 .idea
+/.idea
 .project
 .classpath
 .mymetadata
