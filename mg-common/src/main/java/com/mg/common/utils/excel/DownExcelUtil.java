@@ -5,17 +5,12 @@ import com.mg.framework.sys.PropertyConfigurer;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 
-/**
- * Created by huan on 15/8/19.
- */
 public class DownExcelUtil {
 
     /**
-     * 下载文件  by huan
-     * @param path
-     *        系统完整路径
-     * @param fileName
-     *        文件名称
+     * 下载文件
+     * @param path 系统完整路径
+     * @param fileName  文件名称
      * @param response
      */
     public static void down(String path, String fileName, HttpServletResponse response){

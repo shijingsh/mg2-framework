@@ -34,11 +34,7 @@ public class UserServiceImpl implements UserService {
     private EntityManager entityManager;
     @Autowired
     private UserDao userDao;
-    /**
-     * 根据用户名,获取用户信息
-     * @param loginName
-     * @return
-     */
+
     public UserEntity getUser(String loginName) {
 
         List<String> names = new ArrayList<>();
@@ -50,16 +46,6 @@ public class UserServiceImpl implements UserService {
         return null;
     }
 
-
-    /**
-     * 根据用户名和密码,获取用户信息
-     * @param loginName
-     *        用户名
-     * @param password
-     *        密码
-     * @return
-     *        返回验证通过后返回User对象，若无返回null
-     */
     public UserEntity getUser(String loginName, String password) {
 
         JPAQuery query = getQuery();
@@ -77,11 +63,6 @@ public class UserServiceImpl implements UserService {
         return users.get(0);
     }
 
-    /**
-     * 根据用户id,初始化登录密码
-     * @param userId
-     * @return
-     */
     @Transactional
     public UserEntity saveInitUserPassWord(String userId) {
 
@@ -155,13 +136,7 @@ public class UserServiceImpl implements UserService {
         vo.setPageSize(pageTableVO.getPageSize());
         return vo;
     }
-    /**
-     * 插入用户信息
-     * @param userNames
-     *        用户名称组，每n个一次性提交
-     * @return
-     *        n条数据倒入成功
-     */
+
     @Transactional
     public List<UserEntity> insertUsers(List<String> userNames) {
 
@@ -193,27 +168,18 @@ public class UserServiceImpl implements UserService {
 
     }
 
-    /**
-     * 根据用户主键获取用户对象 by huan
-     * @param id
-     *        用户ID
-     * @return
-     *        用户信息 ID＝＝NULL 返回NULL
-     */
     public UserEntity getUserById(String id) {
         if (StringUtils.isBlank(id)) {
             return null;
         }
-        return userDao.findById(id).get();
+
+        Optional<UserEntity> userEntity= userDao.findById(id);
+        if(userEntity.isPresent()){
+            return userEntity.get();
+        }
+        return null;
      }
 
-    /**
-     * 插入用户信息
-     * @param userName
-     *        单个用户名称
-     * @return
-     *        插入user实体类
-     */
     @Transactional
     public UserEntity insertUser(String userName, String password) {
 
@@ -230,15 +196,6 @@ public class UserServiceImpl implements UserService {
         return userEntity;
     }
 
-    /**
-     * 获取某一用户特殊权限上的别名， 若不存在该权限， 则返回用户名称 by huan
-     * @param userId
-     *        用户ID
-     * @param flag
-     *        权限标示
-     * @return
-     *        用户特殊权限所对应别名
-     */
     public String getUserMarkName(String userId, int flag) {
         if(StringUtils.isBlank(userId)){
             return "";
@@ -256,42 +213,17 @@ public class UserServiceImpl implements UserService {
         return sb.toString();
     }
 
-    @Override
-    public List<Map<String, Object>> getBussinessTemplate() {
-        return null;
-    }
-
-    @Override
-    public void insertBussinessVariables_(List<Map<String, Object>> datas) {
-
-    }
-
-    /**
-     * 修改员工信息
-     * @param user
-     */
     @Transactional
     public void updateUser(UserEntity user) {
         userDao.save(user);
     }
 
-    /**
-     * 修改员工信息
-     * @param user
-     */
     @Transactional
     public void updateUserLastLoginDate(UserEntity user) {
         user.setLastLoginDate(new Date());
         userDao.save(user);
     }
 
-    /**
-     * 模糊检索人员列表by huan
-     * @param name
-     *        名称，为空是所有人员
-     * @return
-     *        返回符合条件的人员信息
-     */
     public List<UserEntity> getUsers(String name) {
         QUserEntity qUserEntity = QUserEntity.userEntity;
         JPAQuery query = getQuery();
@@ -305,14 +237,6 @@ public class UserServiceImpl implements UserService {
         return query.fetch();
     }
 
-
-    /**
-     * 查询用户名称在集合userNames中的所有用户集
-     * @param userNames
-     *        用户名称组，
-     * @return
-     *        满足name in userNames && 状态标示位为有效的用户
-     */
     public List<UserEntity> getUsersByNames(List<String> userNames) {
         QUserEntity qUserEntity = QUserEntity.userEntity;
         JPAQuery query = getQuery();
@@ -324,13 +248,6 @@ public class UserServiceImpl implements UserService {
         return query.fetch();
     }
 
-    /**
-     * 查询用户名称在集合userNames中的所有用户集
-     * @param userIds
-     *        用户名称组，
-     * @return
-     *        满足name in userNames && 状态标示位为有效的用户
-     */
     public List<UserEntity> getUsersByIds(List<String> userIds) {
         QUserEntity qUserEntity = QUserEntity.userEntity;
         JPAQuery query = getQuery();
@@ -344,11 +261,6 @@ public class UserServiceImpl implements UserService {
         return new JPAQuery(entityManager);
     }
 
-    /**
-     * 从request中获取当前用户
-     * @param request
-     * @return
-     */
     public UserEntity getUserByRequest(HttpServletRequest request) {
 
         UserEntity userEntity = UserHolder.getLoginUser();

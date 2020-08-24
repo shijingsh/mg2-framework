@@ -4,7 +4,6 @@ import java.io.Serializable;
 
 /**
  * 缓存支持接口
- * @since liu.huan
  */
 public interface CacheProvider {
     /**

@@ -1,9 +1,5 @@
 package com.mg.common.utils.excel;
 
-/**
- * Created by huan on 15/7/29.
- */
-
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
