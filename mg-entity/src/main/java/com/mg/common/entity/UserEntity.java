@@ -73,6 +73,13 @@ public class UserEntity extends ExpandEntity {
     @Column(columnDefinition = "TINYINT")
     @Type(type = "org.hibernate.type.NumericBooleanType")
     private Boolean isAdmin = Boolean.FALSE;
+
+    /**
+     * 是否已为用户配置推荐
+     */
+    @Column(columnDefinition = "TINYINT")
+    @Type(type = "org.hibernate.type.NumericBooleanType")
+    private Boolean isInitRecommend = Boolean.FALSE;
     /**
      * 用户的公司实例标识
      */
@@ -201,6 +208,14 @@ public class UserEntity extends ExpandEntity {
 
     public void setAdmin(Boolean admin) {
         isAdmin = admin;
+    }
+
+    public Boolean getInitRecommend() {
+        return isInitRecommend;
+    }
+
+    public void setInitRecommend(Boolean initRecommend) {
+        isInitRecommend = initRecommend;
     }
 
     public String getMobile() {
