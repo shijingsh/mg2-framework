@@ -26,41 +26,51 @@ public class UploadServiceImpl implements UploadService {
     private static final char separator = '/';
 
     public List<UploadBean> upload(MultipartHttpServletRequest mulRequest, String userPath) {
-
+        logger.debug("上传文件开始...");
         List<UploadBean> list = new ArrayList<>();
         Map<String, MultipartFile> fileMap = mulRequest.getFileMap();
         Iterator<String> it = fileMap.keySet().iterator();
-        while (it.hasNext()) {
-            UploadBean uploadBean = new UploadBean();
-            uploadBean.setUserPath(userPath);
+        logger.debug("文件个数："+fileMap.size());
+        logger.debug("保存路径："+userPath);
+        try{
+            while (it.hasNext()) {
+                UploadBean uploadBean = new UploadBean();
+                uploadBean.setUserPath(userPath);
 
-            //保存文件到服务器
-            File file = getFileSavePath(uploadBean);
-            String key = it.next();
-            uploadBean.setKey(key);
-            MultipartFile multipartFile = fileMap.get(key);
-            if (!multipartFile.isEmpty()) {
-                File f = new File(getNewFileName(file, multipartFile));
-                logger.info("设置上传文件权限");
-                f.setReadable(true,false);
-                f.setWritable(true,false);
-                f.setExecutable(true,false);
-                try {
-                    multipartFile.transferTo(f);
+                //保存文件到服务器
+                File file = getFileSavePath(uploadBean);
+                String key = it.next();
+                uploadBean.setKey(key);
+                MultipartFile multipartFile = fileMap.get(key);
+                if (!multipartFile.isEmpty()) {
+                    File f = new File(getNewFileName(file, multipartFile));
+                    logger.info("设置上传文件权限");
+                    f.setReadable(true,false);
+                    f.setWritable(true,false);
+                    f.setExecutable(true,false);
+                    try {
+                        multipartFile.transferTo(f);
 
 
-                    uploadBean.setFileName(f.getName());
-                    uploadBean.setPath(f.getPath());
-                    logger.info("file path : {}", file.getPath());
-                } catch (Exception e) {
-                    e.printStackTrace();
+                        uploadBean.setFileName(f.getName());
+                        uploadBean.setPath(f.getPath());
+                        logger.info("file path : {}", file.getPath());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
+
+                //返回文件路径
+                uploadBean.setRelativePath(uploadBean.getRelativePath() + uploadBean.getFileName());
+
+                logger.debug("fileName："+uploadBean.getFileName());
+                logger.debug("relativePath："+uploadBean.getRelativePath());
+                logger.debug("path："+uploadBean.getPath());
+
+                list.add(uploadBean);
             }
-
-            //返回文件路径
-            uploadBean.setRelativePath(uploadBean.getRelativePath() + uploadBean.getFileName());
-
-            list.add(uploadBean);
+        }catch (Exception ex){
+            ex.printStackTrace();
         }
 
         return list;
