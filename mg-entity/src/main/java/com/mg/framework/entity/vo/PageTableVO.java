@@ -45,6 +45,9 @@ public class PageTableVO extends MgPageable {
 		}
 	}
 	public List<?> getRowData() {
+		if(rowData==null){
+			rowData = new ArrayList<>();
+		}
 		return rowData;
 	}
 
