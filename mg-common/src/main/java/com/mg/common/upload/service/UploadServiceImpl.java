@@ -167,7 +167,7 @@ public class UploadServiceImpl implements UploadService {
         String str = String.valueOf(Math.round(Math.random() * 1000000));
         String name = new StringBuilder("mg").append(new Date().getTime()).append(str).append(".jpg").toString();
 
-        StringBuffer sb = new StringBuffer(file.getPath()).append(name);
+        StringBuffer sb = new StringBuffer(file.getPath()).append(separator).append(name);
         logger.info("上传文件:"+sb.toString());
         try {
             File f = new File(sb.toString());
