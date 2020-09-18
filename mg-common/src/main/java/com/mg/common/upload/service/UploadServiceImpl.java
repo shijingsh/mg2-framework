@@ -133,6 +133,9 @@ public class UploadServiceImpl implements UploadService {
         if (StringUtils.isNotBlank(uploadBean.getUserPath())) {
             String today = DateFormatUtils.format(new Date(), "yyyyMMdd");
             savePath = savePath + uploadBean.getUserPath() + separator + today + separator;
+        }else{
+            String today = DateFormatUtils.format(new Date(), "yyyyMMdd");
+            savePath = savePath + today + separator;
         }
         uploadBean.setRelativePath(savePath);
         savePath = PropertyConfigurer.getContextProperty("temppath") + savePath;
