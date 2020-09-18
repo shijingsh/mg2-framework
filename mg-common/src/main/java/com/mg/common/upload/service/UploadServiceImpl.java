@@ -3,6 +3,7 @@ package com.mg.common.upload.service;
 import com.mg.common.upload.vo.UploadBase64;
 import com.mg.common.upload.vo.UploadBean;
 import com.mg.common.utils.Base64Util;
+import com.mg.common.utils.FtpUtils;
 import com.mg.framework.sys.PropertyConfigurer;
 import com.mg.framework.utils.UserHolder;
 import org.apache.commons.lang3.time.DateFormatUtils;
@@ -43,17 +44,14 @@ public class UploadServiceImpl implements UploadService {
                 uploadBean.setKey(key);
                 MultipartFile multipartFile = fileMap.get(key);
                 if (!multipartFile.isEmpty()) {
-                    File f = new File(getNewFileName(file, multipartFile));
-                    logger.info("设置上传文件权限");
-                    f.setReadable(true,false);
-                    f.setWritable(true,false);
-                    f.setExecutable(true,false);
                     try {
-                        multipartFile.transferTo(f);
+                        String name = getNewFileName(file, multipartFile);
+                        uploadBean.setFileName(name);
 
+                        FtpUtils ftp =new FtpUtils();
+                        ftp.uploadFile(uploadBean.getRelativePath(), name, multipartFile.getInputStream());
 
-                        uploadBean.setFileName(f.getName());
-                        uploadBean.setPath(f.getPath());
+                        //uploadBean.setPath(f.getPath());
                         logger.info("file path : {}", file.getPath());
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -93,14 +91,14 @@ public class UploadServiceImpl implements UploadService {
             if (!multipartFile.isEmpty()) {
                 File f = new File(getNewFileName(file, multipartFile));
                 try {
-                    multipartFile.transferTo(f);
-                    logger.info("uploadForMap 设置上传文件权限");
-                    f.setReadable(true,false);
-                    f.setWritable(true,false);
-                    //f.setExecutable(true,false);
+                    String name = getNewFileName(file, multipartFile);
+                    uploadBean.setFileName(name);
+
+                    FtpUtils ftp =new FtpUtils();
+                    ftp.uploadFile(uploadBean.getRelativePath(), name, multipartFile.getInputStream());
 
                     uploadBean.setFileName(f.getName());
-                    uploadBean.setPath(f.getPath());
+                    //uploadBean.setPath(f.getPath());
                     logger.info("file path : {}", file.getPath());
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -117,7 +115,7 @@ public class UploadServiceImpl implements UploadService {
     }
 
     private String getNewFileName(File file, MultipartFile item) {
-        StringBuffer sb = new StringBuffer(file.getPath()).append(separator);
+        StringBuffer sb = new StringBuffer();
         String str = String.valueOf(Math.round(Math.random() * 1000000));
         sb.append("mg").append(new Date().getTime()).append(str);
         sb.append(item.getOriginalFilename().substring(item.getOriginalFilename().lastIndexOf(".")));
@@ -158,14 +156,15 @@ public class UploadServiceImpl implements UploadService {
         uploadBean.setUserPath(uploadBase64.getUserPath());
 
         //保存文件到服务器
-
         File file = getFileSavePath(uploadBean);
         String key = uploadBase64.getKey();
         uploadBean.setKey(key);
 
-        StringBuffer sb = new StringBuffer(file.getPath()).append(separator);
         String str = String.valueOf(Math.round(Math.random() * 1000000));
-        sb.append("mg").append(new Date().getTime()).append(str).append(".jpg");
+        String name = new StringBuilder("mg").append(new Date().getTime()).append(str).append(".jpg").toString();
+
+        StringBuffer sb = new StringBuffer(file.getPath()).append(separator);
+        sb.append(name);
 
         try {
             File f = new File(sb.toString());
@@ -176,6 +175,10 @@ public class UploadServiceImpl implements UploadService {
 
             boolean b = Base64Util.Base64ToImage(uploadBase64.getImgStr(),f.getAbsolutePath());
             logger.info("base64转文件格式成功标志："+b);
+
+            FtpUtils ftp =new FtpUtils();
+            ftp.uploadFile(uploadBean.getRelativePath(), name, f.getAbsolutePath());
+
             uploadBean.setFileName(f.getName());
             uploadBean.setPath(f.getPath());
             logger.info("file path : {}", file.getPath());
