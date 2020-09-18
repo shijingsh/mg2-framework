@@ -6,8 +6,8 @@ import com.mg.common.utils.Base64Util;
 import com.mg.common.utils.FtpUtils;
 import com.mg.framework.sys.PropertyConfigurer;
 import com.mg.framework.utils.UserHolder;
-import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.util.*;
 
 /**
@@ -166,9 +167,8 @@ public class UploadServiceImpl implements UploadService {
         String str = String.valueOf(Math.round(Math.random() * 1000000));
         String name = new StringBuilder("mg").append(new Date().getTime()).append(str).append(".jpg").toString();
 
-        StringBuffer sb = new StringBuffer(file.getPath()).append(separator);
-        sb.append(name);
-
+        StringBuffer sb = new StringBuffer(file.getPath()).append(name);
+        logger.info("上传文件:"+sb.toString());
         try {
             File f = new File(sb.toString());
             logger.info("设置上传文件权限");
@@ -180,7 +180,7 @@ public class UploadServiceImpl implements UploadService {
             logger.info("base64转文件格式成功标志："+b);
 
             FtpUtils ftp =new FtpUtils();
-            ftp.uploadFile(uploadBean.getRelativePath(), name, f.getAbsolutePath());
+            ftp.uploadFile(uploadBean.getRelativePath(), name, new FileInputStream(f));
 
             uploadBean.setFileName(f.getName());
             uploadBean.setPath(f.getPath());
