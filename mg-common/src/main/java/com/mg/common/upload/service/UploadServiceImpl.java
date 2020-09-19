@@ -178,12 +178,14 @@ public class UploadServiceImpl implements UploadService {
 
             boolean b = Base64Util.Base64ToImage(uploadBase64.getImgStr(),f.getAbsolutePath());
             logger.info("base64转文件格式成功标志："+b);
+            logger.info("absolutePath："+f.getAbsolutePath());
 
             FtpUtils ftp =new FtpUtils();
             ftp.uploadFile(uploadBean.getRelativePath(), name, new FileInputStream(f));
 
             uploadBean.setFileName(f.getName());
             uploadBean.setPath(f.getPath());
+            logger.info("relativePath："+uploadBean.getRelativePath());
             logger.info("file path : {}", file.getPath());
         } catch (Exception e) {
             e.printStackTrace();
