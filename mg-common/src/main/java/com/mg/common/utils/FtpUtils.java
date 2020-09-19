@@ -158,7 +158,7 @@ public class FtpUtils {
     //创建多层目录文件，如果有ftp服务器已存在该文件，则不创建，如果无，则创建
     public boolean CreateDirecroty(String remote) throws IOException {
         boolean success = true;
-        String directory = remote + "/";
+        String directory = remote ;
         // 如果远程目录不存在，则递归创建远程服务器目录
         if (!directory.equalsIgnoreCase("/") && !changeWorkingDirectory(new String(directory))) {
             int start = 0;
@@ -300,9 +300,9 @@ public class FtpUtils {
         return flag;
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws FileNotFoundException {
         FtpUtils ftp =new FtpUtils();
-        ftp.uploadFile("/null", "aaa.jpg", "D://aaa.jpg");
+        ftp.uploadFile("/null/", "aaa.jpg", new FileInputStream(new File("D://aaa.jpg")));
         //ftp.downloadFile("ftpFile/data", "123.docx", "F://");
         //ftp.deleteFile("ftpFile/data", "123.docx");
         System.out.println("ok");
