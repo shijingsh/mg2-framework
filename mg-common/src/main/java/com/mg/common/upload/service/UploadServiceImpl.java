@@ -181,18 +181,17 @@ public class UploadServiceImpl implements UploadService {
 
     public void ftpUpload(UploadBean uploadBean,File file,MultipartFile multipartFile){
         try {
-            String name = getNewFileName(file, multipartFile);
-            uploadBean.setFileName(name);
-
             String enableFtp = PropertyConfigurer.getConfig("ftp.enable");
             try {
                 if("1".equals(enableFtp)){
+                    String name = getNewFileName(file, multipartFile);
+                    uploadBean.setFileName(name);
                     logger.info("启用了FTP上传");
                     FtpUtils ftp =new FtpUtils();
                     ftp.uploadFile(uploadBean.getRelativePath(), name, multipartFile.getInputStream());
                 }else{
                     logger.info("未启用了FTP上传");
-                    File f = new File(getNewFileName(file, multipartFile));
+                    File f = new File(uploadBean.getRelativePath()+getNewFileName(file, multipartFile));
                     logger.info("设置上传文件权限");
                     f.setReadable(true,false);
                     f.setWritable(true,false);
