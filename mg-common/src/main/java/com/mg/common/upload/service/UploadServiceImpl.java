@@ -45,18 +45,7 @@ public class UploadServiceImpl implements UploadService {
                 uploadBean.setKey(key);
                 MultipartFile multipartFile = fileMap.get(key);
                 if (!multipartFile.isEmpty()) {
-                    try {
-                        String name = getNewFileName(file, multipartFile);
-                        uploadBean.setFileName(name);
-
-                        FtpUtils ftp =new FtpUtils();
-                        ftp.uploadFile(uploadBean.getRelativePath(), name, multipartFile.getInputStream());
-
-                        //uploadBean.setPath(f.getPath());
-                        logger.info("file path : {}", file.getPath());
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                    ftpUpload(uploadBean,file,multipartFile);
                 }
 
                 //返回文件路径
@@ -90,20 +79,7 @@ public class UploadServiceImpl implements UploadService {
             uploadBean.setKey(key);
             MultipartFile multipartFile = fileMap.get(key);
             if (!multipartFile.isEmpty()) {
-                File f = new File(getNewFileName(file, multipartFile));
-                try {
-                    String name = getNewFileName(file, multipartFile);
-                    uploadBean.setFileName(name);
-
-                    FtpUtils ftp =new FtpUtils();
-                    ftp.uploadFile(uploadBean.getRelativePath(), name, multipartFile.getInputStream());
-
-                    uploadBean.setFileName(f.getName());
-                    //uploadBean.setPath(f.getPath());
-                    logger.info("file path : {}", file.getPath());
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                ftpUpload(uploadBean,file,multipartFile);
             }
 
             //返回文件路径
@@ -180,8 +156,12 @@ public class UploadServiceImpl implements UploadService {
             logger.info("base64转文件格式成功标志："+b);
             logger.info("absolutePath："+f.getAbsolutePath());
 
-            FtpUtils ftp =new FtpUtils();
-            ftp.uploadFile(uploadBean.getRelativePath(), name, new FileInputStream(f));
+            String enableFtp = PropertyConfigurer.getConfig("ftp.enable");
+            if("1".equals(enableFtp)){
+                logger.info("启用了FTP上传");
+                FtpUtils ftp =new FtpUtils();
+                ftp.uploadFile(uploadBean.getRelativePath(), name, new FileInputStream(f));
+            }
 
             uploadBean.setFileName(f.getName());
             uploadBean.setPath(f.getPath());
@@ -197,5 +177,36 @@ public class UploadServiceImpl implements UploadService {
         list.add(uploadBean);
 
         return list;
+    }
+
+    public void ftpUpload(UploadBean uploadBean,File file,MultipartFile multipartFile){
+        try {
+            String name = getNewFileName(file, multipartFile);
+            uploadBean.setFileName(name);
+
+            String enableFtp = PropertyConfigurer.getConfig("ftp.enable");
+            try {
+                if("1".equals(enableFtp)){
+                    logger.info("启用了FTP上传");
+                    FtpUtils ftp =new FtpUtils();
+                    ftp.uploadFile(uploadBean.getRelativePath(), name, multipartFile.getInputStream());
+                }else{
+                    logger.info("未启用了FTP上传");
+                    File f = new File(getNewFileName(file, multipartFile));
+                    logger.info("设置上传文件权限");
+                    f.setReadable(true,false);
+                    f.setWritable(true,false);
+                    f.setExecutable(true,false);
+                    multipartFile.transferTo(f);
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+
+            //uploadBean.setPath(f.getPath());
+            logger.info("file path : {}", file.getPath());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
