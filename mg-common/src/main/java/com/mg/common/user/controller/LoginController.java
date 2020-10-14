@@ -164,6 +164,8 @@ public class LoginController {
             String url = "https://api.weixin.qq.com/sns/jscode2session?appid="+appid+"&secret="+secret+"&js_code=" + code + "&grant_type=authorization_code";
 
             String json = HttpClientUtil.sendGetRequest(url);
+            System.out.println("weixinLogin返回：");
+            System.out.println(json);
             JSONObject jsonObject = JSON.parseObject(json);
             String errcode = jsonObject.getString("errcode");
             if (StringUtils.isBlank(errcode)) {

@@ -178,6 +178,11 @@ public class SmsService {
 	}
 	public int sendSms(String mobile, String templateParam,String templateCode) throws Exception {
 		SendSmsResponse response = sendSmsAliyun(mobile,templateParam,templateCode);
+		logger.info("=======================================");
+		logger.info("code:"+response.getCode());
+		logger.info("message:"+response.getMessage());
+		logger.info("bizId:"+response.getBizId());
+		logger.info("requestId:"+response.getRequestId());
 		if(response.getCode() != null && response.getCode().equals("OK")) {
 			return 1;
 		}
