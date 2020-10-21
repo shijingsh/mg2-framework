@@ -60,6 +60,7 @@ public class HttpClientUtil
       String respBodyMsg = respContent;
       System.out.println(new StringBuilder().append("HTTP应答完整报文=[").append(respStatusLine).append("\r\n").append(respHeaderMsg).append("\r\n\r\n").append(respBodyMsg).append("]").toString());
       System.out.println("-------------------------------------------------------------------------------------------");
+      System.out.println("url："+reqURL);
     }
     catch (ConnectTimeoutException cte) {
       logger.error(new StringBuilder().append("请求通信[").append(reqURL).append("]时连接超时,堆栈轨迹如下").toString(), cte);
@@ -102,6 +103,8 @@ public class HttpClientUtil
       if (response.getStatusLine().getStatusCode() != 200) {
         httpPost.abort();
       }
+      System.out.println("-------------------------------------------------------------------------------------------");
+      System.out.println("url："+reqURL);
       HttpEntity entity = response.getEntity();
       if (null != entity) {
         reseContent = EntityUtils.toString(entity, encodeCharset);
@@ -148,6 +151,8 @@ public class HttpClientUtil
       }
     };
     try {
+      System.out.println("-------------------------------------------------------------------------------------------");
+      System.out.println("url："+reqURL);
       SSLContext sslContext = SSLContext.getInstance("TLS");
 
       sslContext.init(null, new TrustManager[] { trustManager }, null);
