@@ -158,9 +158,16 @@ public class LoginController {
         String code = req.getParameter("code");
         String userToken = req.getParameter("userToken");
 
+        String appid = req.getParameter("appid");
+        String secret = req.getParameter("secret");
+
         if (StringUtils.isNotBlank(code)){
-            String appid = PropertyConfigurer.getConfig("weixin.appid");
-            String secret = PropertyConfigurer.getConfig("weixin.secret");
+            if(StringUtils.isBlank(appid)){
+                appid = PropertyConfigurer.getConfig("weixin.appid");
+            }
+            if(StringUtils.isBlank(secret)) {
+                secret = PropertyConfigurer.getConfig("weixin.secret");
+            }
             String url = "https://api.weixin.qq.com/sns/jscode2session?appid="+appid+"&secret="+secret+"&js_code=" + code + "&grant_type=authorization_code";
 
             String json = HttpClientUtil.sendGetRequest(url);

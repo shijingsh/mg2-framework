@@ -70,9 +70,14 @@ public class WechatController {
     @RequestMapping("/config")
     public String config() {
         String grant_type = req.getParameter("grant_type");
-
-        String appid = PropertyConfigurer.getConfig("weixin.appid");
-        String secret = PropertyConfigurer.getConfig("weixin.secret");
+        String appid = req.getParameter("appid");
+        String secret = req.getParameter("secret");
+        if(StringUtils.isBlank(appid)){
+            appid = PropertyConfigurer.getConfig("weixin.appid");
+        }
+        if(StringUtils.isBlank(secret)) {
+            secret = PropertyConfigurer.getConfig("weixin.secret");
+        }
         String url = "https://api.weixin.qq.com/cgi-bin/token?grant_type="+grant_type+"&appid="+appid+"&secret="+secret;
 
         String json = HttpClientUtil.sendGetRequest(url);
