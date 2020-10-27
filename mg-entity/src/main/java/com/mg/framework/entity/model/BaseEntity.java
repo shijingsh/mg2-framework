@@ -48,7 +48,7 @@ public abstract class BaseEntity implements java.io.Serializable{
     /**
      * 创建实体对象的时间
      */
-    @JSONField(serialize = false, deserialize = false)
+    //@JSONField(serialize = false, deserialize = false)
     @Column(name = "created_date")
     protected Date createdDate;
 
