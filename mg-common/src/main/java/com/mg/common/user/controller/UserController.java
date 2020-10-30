@@ -229,8 +229,8 @@ public class UserController {
      */
     @ResponseBody
     @RequestMapping("/info")
-    public String info() {
-        UserEntity userEntity = UserHolder.getLoginUser();
+    public String info(HttpServletRequest request) {
+        UserEntity userEntity = userService.getUserByRequest(request);
 
         return JsonResponse.success(userEntity, null);
     }
