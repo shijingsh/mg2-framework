@@ -7,7 +7,9 @@ import com.mg.common.shiro.service.UserRealm;
 import com.mg.common.user.service.UserService;
 import com.mg.common.entity.UserEntity;
 import com.mg.common.instance.service.InstanceService;
+import com.mg.common.user.vo.PhoneDecryptInfo;
 import com.mg.common.user.vo.ThirdUserVo;
+import com.mg.common.utils.AESGetPhoneNumber;
 import com.mg.common.utils.HttpClientUtil;
 import com.mg.common.utils.MD5;
 import com.mg.framework.log.Constants;
@@ -23,6 +25,7 @@ import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
@@ -190,11 +193,12 @@ public class LoginController {
                 try {
                     String userId = jsonObject.getString("unionid");
                     if (StringUtils.isBlank(userId)){
-                        jsonObject.getString("openid");
+                        userId =  jsonObject.getString("openid");
                     }
+                    String sessionKey = jsonObject.getString("session_key");
                     ThirdUserVo thirdUserVo = new ThirdUserVo();
                     thirdUserVo.setUserId(userId);
-                    thirdUserVo.setAccessToken(jsonObject.getString("session_key"));
+                    thirdUserVo.setAccessToken(sessionKey);
                     UserEntity userEntity = userService.saveOrGetThirdUser(thirdUserVo);
                     UsernamePasswordToken token = new UsernamePasswordToken(userEntity.getLoginName(), userEntity.getPassword());
                     subject.login(token);
@@ -220,8 +224,14 @@ public class LoginController {
         String grant_type = req.getParameter("grant_type");
 
         if (StringUtils.isNotBlank(grant_type)){
-            String appid = PropertyConfigurer.getConfig("weixin.appid");
-            String secret = PropertyConfigurer.getConfig("weixin.secret");
+            String appid = req.getParameter("appid");
+            String secret = req.getParameter("secret");
+            if(StringUtils.isBlank(appid)){
+                appid = PropertyConfigurer.getConfig("weixin.appid");
+            }
+            if(StringUtils.isBlank(secret)) {
+                secret = PropertyConfigurer.getConfig("weixin.secret");
+            }
             String url = "https://api.weixin.qq.com/cgi-bin/token?grant_type="+grant_type+"&appid="+appid+"&secret="+secret;
 
             String json = HttpClientUtil.sendGetRequest(url);
@@ -234,5 +244,40 @@ public class LoginController {
         }
 
         return JsonResponse.success(null, null);
+    }
+
+    /**
+     * 解密并且获取用户手机号码
+     */
+    @ResponseBody
+    @RequestMapping(value = "deciphering", method = RequestMethod.GET)
+    public  String deciphering(String encryptedData,
+                                            String iv, String sessionKey,
+                                            HttpServletRequest request) {
+
+        System.out.println("加密的敏感数据:" + encryptedData);
+        System.out.println("初始向量:" + iv);
+        System.out.println("会话密钥:" + sessionKey);
+        //String appId = "XXXXXXXXX";
+        AESGetPhoneNumber aes = new AESGetPhoneNumber(encryptedData,sessionKey,iv);
+        PhoneDecryptInfo info = aes.decrypt();
+        if (null==info){
+            System.out.println("error");
+        }else {
+            System.out.println(info.toString());
+            //if (!info.getWatermark().getAppId().equals(appId)){
+            //    System.out.println("wrong appId");
+            //}
+        }
+
+        if(StringUtils.isNotBlank(info.getPhoneNumber())){
+            UserEntity user = userService.getUserByRequest(request);
+            user.setMobile(info.getPhoneNumber());
+            user.setLastLoginDate(new Date());
+            userService.updateUser(user);
+        }
+
+
+        return JsonResponse.success(info, null);
     }
 }
