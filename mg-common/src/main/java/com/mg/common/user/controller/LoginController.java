@@ -250,7 +250,7 @@ public class LoginController {
      * 解密并且获取用户手机号码
      */
     @ResponseBody
-    @RequestMapping(value = "deciphering", method = RequestMethod.GET)
+    @RequestMapping("/deciphering")
     public  String deciphering(String encryptedData,
                                             String iv, String sessionKey,
                                             HttpServletRequest request) {
