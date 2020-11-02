@@ -290,6 +290,9 @@ public class UserServiceImpl implements UserService {
            userEntity.setAccessToken(thirdUserVo.getAccessToken());
 
            userDao.save(userEntity);
+       }else{
+           userEntity.setAccessToken(thirdUserVo.getAccessToken());
+           userDao.save(userEntity);
        }
 
         return userEntity;

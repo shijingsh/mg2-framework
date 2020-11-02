@@ -270,7 +270,7 @@ public class LoginController {
             //}
         }
 
-        if(StringUtils.isNotBlank(info.getPhoneNumber())){
+        if(info!=null && StringUtils.isNotBlank(info.getPhoneNumber())){
             UserEntity user = userService.getUserByRequest(request);
             user.setMobile(info.getPhoneNumber());
             user.setLastLoginDate(new Date());
