@@ -164,6 +164,10 @@ public class LoginController {
         String appid = req.getParameter("appid");
         String secret = req.getParameter("secret");
 
+        String nickName = req.getParameter("nickName");
+        String avatarUrl = req.getParameter("avatarUrl");
+        String gender = req.getParameter("gender");
+
         if (StringUtils.isNotBlank(code)){
             if(StringUtils.isBlank(appid)){
                 appid = PropertyConfigurer.getConfig("weixin.appid");
@@ -199,6 +203,9 @@ public class LoginController {
                     ThirdUserVo thirdUserVo = new ThirdUserVo();
                     thirdUserVo.setUserId(userId);
                     thirdUserVo.setAccessToken(sessionKey);
+                    thirdUserVo.setUserAvatar(avatarUrl);
+                    thirdUserVo.setUserName(nickName);
+                    thirdUserVo.setUserGender(gender);
                     UserEntity userEntity = userService.saveOrGetThirdUser(thirdUserVo);
                     UsernamePasswordToken token = new UsernamePasswordToken(userEntity.getLoginName(), userEntity.getPassword());
                     subject.login(token);

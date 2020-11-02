@@ -291,6 +291,13 @@ public class UserServiceImpl implements UserService {
 
            userDao.save(userEntity);
        }else{
+           if(StringUtils.isNotBlank(thirdUserVo.getUserName())){
+               userEntity.setName(thirdUserVo.getUserName());
+           }
+           if(StringUtils.isNotBlank(thirdUserVo.getUserAvatar())){
+               userEntity.setHeadPortrait(thirdUserVo.getUserAvatar());
+           }
+
            userEntity.setAccessToken(thirdUserVo.getAccessToken());
            userDao.save(userEntity);
        }
