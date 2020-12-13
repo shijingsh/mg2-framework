@@ -10,7 +10,7 @@ public class ThirdUserVo implements java.io.Serializable{
     private String accessToken;
     private String userAvatar;
     private String userGender;
-
+    private String mobile;
     /**
      * 多实例用户token
      */
@@ -54,6 +54,14 @@ public class ThirdUserVo implements java.io.Serializable{
 
     public void setUserGender(String userGender) {
         this.userGender = userGender;
+    }
+
+    public String getMobile() {
+        return mobile;
+    }
+
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
     }
 
     public String getUserToken() {

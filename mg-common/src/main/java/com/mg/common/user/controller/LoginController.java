@@ -8,6 +8,7 @@ import com.mg.common.user.service.UserService;
 import com.mg.common.entity.UserEntity;
 import com.mg.common.instance.service.InstanceService;
 import com.mg.common.user.vo.PhoneDecryptInfo;
+import com.mg.common.user.vo.ThirdLoginVo;
 import com.mg.common.user.vo.ThirdUserVo;
 import com.mg.common.utils.AESGetPhoneNumber;
 import com.mg.common.utils.HttpClientUtil;
@@ -158,15 +159,17 @@ public class LoginController {
     @RequestMapping("/weixinLogin")
     public String weixinLogin() {
 
-        String code = req.getParameter("code");
-        String userToken = req.getParameter("userToken");
+        ThirdLoginVo loginVo = WebUtil.getJsonBody(req, ThirdLoginVo.class);
 
-        String appid = req.getParameter("appid");
-        String secret = req.getParameter("secret");
-
-        String nickName = req.getParameter("nickName");
-        String avatarUrl = req.getParameter("avatarUrl");
-        String gender = req.getParameter("gender");
+        System.out.println("weixinLogin登录中："+loginVo.getFrom());
+        String code = loginVo.getCode();
+        String userToken = loginVo.getUserToken();
+        String appid = loginVo.getAppid();
+        String secret = loginVo.getSecret();
+        String nickName = loginVo.getNickName();
+        String avatarUrl = loginVo.getAvatarUrl();
+        String gender = loginVo.getGender();
+        String mobile = loginVo.getMobile();
 
         if (StringUtils.isNotBlank(code)){
             if(StringUtils.isBlank(appid)){
@@ -196,16 +199,20 @@ public class LoginController {
                 }
                 try {
                     String userId = jsonObject.getString("unionid");
+                    System.out.println("weixinLogin返回unionid："+userId);
                     if (StringUtils.isBlank(userId)){
                         userId =  jsonObject.getString("openid");
+                        System.out.println("weixinLogin返回openid："+userId);
                     }
                     String sessionKey = jsonObject.getString("session_key");
+
                     ThirdUserVo thirdUserVo = new ThirdUserVo();
                     thirdUserVo.setUserId(userId);
                     thirdUserVo.setAccessToken(sessionKey);
                     thirdUserVo.setUserAvatar(avatarUrl);
                     thirdUserVo.setUserName(nickName);
                     thirdUserVo.setUserGender(gender);
+                    thirdUserVo.setMobile(mobile);
                     UserEntity userEntity = userService.saveOrGetThirdUser(thirdUserVo);
                     UsernamePasswordToken token = new UsernamePasswordToken(userEntity.getLoginName(), userEntity.getPassword());
                     subject.login(token);

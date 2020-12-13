@@ -288,6 +288,7 @@ public class UserServiceImpl implements UserService {
            userEntity.setHeadPortrait(thirdUserVo.getUserAvatar());
            userEntity.setPassword(MD5.GetMD5Code(UserEntity.DEFAULT_PASSWORD));
            userEntity.setAccessToken(thirdUserVo.getAccessToken());
+           userEntity.setMobile(thirdUserVo.getMobile());
 
            userDao.save(userEntity);
        }else{
@@ -297,7 +298,9 @@ public class UserServiceImpl implements UserService {
            if(StringUtils.isNotBlank(thirdUserVo.getUserAvatar())){
                userEntity.setHeadPortrait(thirdUserVo.getUserAvatar());
            }
-
+           if(StringUtils.isNotBlank(thirdUserVo.getMobile())){
+               userEntity.setMobile(thirdUserVo.getMobile());
+           }
            userEntity.setAccessToken(thirdUserVo.getAccessToken());
            userDao.save(userEntity);
        }
