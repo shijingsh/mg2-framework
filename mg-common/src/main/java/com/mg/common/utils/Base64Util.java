@@ -2,6 +2,7 @@ package com.mg.common.utils;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.Base64Utils;
+import sun.misc.BASE64Decoder;
 
 import java.io.*;
 
@@ -35,24 +36,38 @@ public class Base64Util {
 
         if (StringUtils.isEmpty(imgStr)) // 图像数据为空
             return false;
-
+        OutputStream out = null;
         try {
+            //换行符问题
+            String sign = imgStr.replaceAll("[\\s*\t\n\r]", "");
             // Base64解码
-            byte[] b = Base64Utils.decodeFromString(imgStr);
+            byte[] b = org.apache.commons.codec.binary.Base64.decodeBase64(sign);
+            //byte[] b = Base64Utils.decodeFromString(imgStr);
+            //BASE64Decoder decoder = new BASE64Decoder();
+            //byte[] b =  decoder.decodeBuffer(imgStr);
             for (int i = 0; i < b.length; ++i) {
                 if (b[i] < 0) {// 调整异常数据
                     b[i] += 256;
                 }
             }
 
-            OutputStream out = new FileOutputStream(imgFilePath);
+            out = new FileOutputStream(imgFilePath);
             out.write(b);
             out.flush();
-            out.close();
 
             return true;
         } catch (Exception e) {
+            System.out.println("Base64ToImage error!");
+            e.printStackTrace();
             return false;
+        }finally {
+            if(out!=null){
+                try {
+                    out.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
 
     }
