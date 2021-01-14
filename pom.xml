@@ -57,7 +57,7 @@
     <java.version>1.8</java.version>
     <spring.version>5.1.6.RELEASE</spring.version>
     <hibernate.version>5.3.15.Final</hibernate.version>
-    <poi.version>3.10-FINAL</poi.version>
+    <poi.version>4.1.2</poi.version>
     <shiro.version>1.5.0</shiro.version>
     <querydsl.version>4.2.2</querydsl.version>
     <logback.version>1.2.3</logback.version>
