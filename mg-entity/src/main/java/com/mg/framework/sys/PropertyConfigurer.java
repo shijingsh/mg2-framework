@@ -29,6 +29,12 @@ public class PropertyConfigurer extends PropertyPlaceholderConfigurer {
         if(ctxPropMap==null)return null;
         return (String)ctxPropMap.get(key);
     }
+    public static String getConfig(String key,String defaultStr)
+    {
+        if(ctxPropMap==null || ctxPropMap.get(key)==null)return defaultStr;
+        return (String)ctxPropMap.get(key);
+    }
+
     public static Map<String, Object> getConfigurer() {
         return ctxPropMap;
     }

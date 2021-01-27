@@ -2,6 +2,7 @@ package com.mg.framework.entity.multiTenant;
 
 import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.druid.pool.DruidPooledConnection;
+import com.mg.framework.sys.PropertyConfigurer;
 import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,7 +12,7 @@ import java.sql.SQLException;
 
 public class MgDataSource extends DruidDataSource {
     private static Logger logger = LoggerFactory.getLogger(MgDataSource.class);
-    public static final String DEFAULT_DB = "mg_xiushang";
+    public static final String DEFAULT_DB = PropertyConfigurer.getConfig("SYS.DEFAULT_DB","mg_xiushang");//默认数据库实例;
     @Override
     public DruidPooledConnection getConnection() throws SQLException {
         DruidPooledConnection conn = super.getConnection();
