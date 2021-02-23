@@ -4,10 +4,13 @@ import com.mg.common.upload.vo.UploadBase64;
 import com.mg.common.upload.vo.UploadBean;
 import com.mg.common.utils.Base64Util;
 import com.mg.common.utils.FtpUtils;
+import com.mg.common.utils.JsonUtils;
 import com.mg.framework.sys.PropertyConfigurer;
 import com.mg.framework.utils.UserHolder;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -51,16 +54,17 @@ public class UploadServiceImpl implements UploadService {
                 //返回文件路径
                 uploadBean.setRelativePath(uploadBean.getRelativePath() + uploadBean.getFileName());
 
-                logger.debug("fileName："+uploadBean.getFileName());
-                logger.debug("relativePath："+uploadBean.getRelativePath());
-                logger.debug("path："+uploadBean.getPath());
+                logger.info("fileName："+uploadBean.getFileName());
+                logger.info("relativePath："+uploadBean.getRelativePath());
+                logger.info("path："+uploadBean.getPath());
 
                 list.add(uploadBean);
             }
         }catch (Exception ex){
             ex.printStackTrace();
         }
-
+        logger.info("upload result:");
+        logger.info(JsonUtils.toJsonStr(list));
         return list;
     }
 
@@ -176,6 +180,8 @@ public class UploadServiceImpl implements UploadService {
 
         list.add(uploadBean);
 
+        logger.info("upload result:");
+        logger.info(JsonUtils.toJsonStr(list));
         return list;
     }
 
