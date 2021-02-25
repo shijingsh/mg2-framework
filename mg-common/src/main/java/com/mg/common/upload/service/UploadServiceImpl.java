@@ -48,6 +48,12 @@ public class UploadServiceImpl implements UploadService {
                 uploadBean.setKey(key);
                 MultipartFile multipartFile = fileMap.get(key);
                 if (!multipartFile.isEmpty()) {
+                    String originalFilename = multipartFile.getOriginalFilename();// IMG_161423328450980_compressed.jpg
+                    if(StringUtils.isNotBlank(originalFilename)){
+                        originalFilename = originalFilename.replace("_compressed","");
+                        uploadBean.setSourceFileName(originalFilename);
+                    }
+
                     ftpUpload(uploadBean,file,multipartFile);
                 }
 

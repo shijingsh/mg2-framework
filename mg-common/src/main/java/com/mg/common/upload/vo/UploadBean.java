@@ -14,6 +14,10 @@ public class UploadBean {
      */
     String fileName ;
     /**
+     * 源文件名
+     */
+    String sourceFileName ;
+    /**
      * 相对路径
      */
     String relativePath ;
@@ -36,6 +40,14 @@ public class UploadBean {
 
     public void setUserPath(String userPath) {
         this.userPath = userPath;
+    }
+
+    public String getSourceFileName() {
+        return sourceFileName;
+    }
+
+    public void setSourceFileName(String sourceFileName) {
+        this.sourceFileName = sourceFileName;
     }
 
     public String getFileName() {
