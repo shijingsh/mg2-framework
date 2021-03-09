@@ -125,19 +125,25 @@ public class UploadServiceImpl implements UploadService {
             rootPath = instanceId;
         }
         String savePath = separator + rootPath + separator;
-
         if (StringUtils.isNotBlank(uploadBean.getUserPath())) {
-            String today = DateFormatUtils.format(new Date(), "yyyyMMdd");
-            savePath = savePath + uploadBean.getUserPath() + separator + today + separator;
+            savePath = savePath + uploadBean.getUserPath() + separator  + getDatePath();
         }else{
-            String today = DateFormatUtils.format(new Date(), "yyyyMMdd");
-            savePath = savePath + today + separator;
+            savePath = savePath + getDatePath();
         }
         uploadBean.setRelativePath(savePath);
         savePath = PropertyConfigurer.getContextProperty("temppath") + savePath;
 
 
         return savePath;
+    }
+
+    private String getDatePath(){
+        Date date = new Date();
+        String todayY = DateFormatUtils.format(date, "yyyy");
+        String todayM = DateFormatUtils.format(date, "MM");
+        String today = DateFormatUtils.format(date, "dd");
+
+        return todayY + separator + todayM + separator + today + separator;
     }
 
     public boolean removeFile(String path) {
