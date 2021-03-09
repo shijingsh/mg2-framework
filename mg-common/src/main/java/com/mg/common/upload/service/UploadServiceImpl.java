@@ -1,5 +1,6 @@
 package com.mg.common.upload.service;
 
+import com.mg.common.upload.utils.ChunkedUploadUtils;
 import com.mg.common.upload.vo.UploadBase64;
 import com.mg.common.upload.vo.UploadBean;
 import com.mg.common.utils.Base64Util;
@@ -19,6 +20,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -43,7 +45,7 @@ public class UploadServiceImpl implements UploadService {
                 uploadBean.setUserPath(userPath);
 
                 //保存文件到服务器
-                File file = getFileSavePath(uploadBean);
+                File file = getTargetFile(uploadBean);
                 String key = it.next();
                 uploadBean.setKey(key);
                 MultipartFile multipartFile = fileMap.get(key);
@@ -83,7 +85,7 @@ public class UploadServiceImpl implements UploadService {
             uploadBean.setUserPath(userPath);
 
             //保存文件到服务器
-            File file = getFileSavePath(uploadBean);
+            File file = getTargetFile(uploadBean);
             String key = it.next();
             uploadBean.setKey(key);
             MultipartFile multipartFile = fileMap.get(key);
@@ -108,7 +110,15 @@ public class UploadServiceImpl implements UploadService {
         return sb.toString();
     }
 
-    public File getFileSavePath(UploadBean uploadBean) {
+    public File getTargetFile(UploadBean uploadBean) {
+        String path = getTargetFilePath(uploadBean);
+        File file = new File(path);
+        file.mkdirs();
+
+        return file;
+    }
+
+    public String getTargetFilePath(UploadBean uploadBean) {
         String instanceId = UserHolder.getLoginUserTenantId();
         String rootPath = "mg-static";
         if (StringUtils.isNotBlank(instanceId)) {
@@ -125,10 +135,9 @@ public class UploadServiceImpl implements UploadService {
         }
         uploadBean.setRelativePath(savePath);
         savePath = PropertyConfigurer.getContextProperty("temppath") + savePath;
-        File file = new File(savePath);
-        file.mkdirs();
 
-        return file;
+
+        return savePath;
     }
 
     public boolean removeFile(String path) {
@@ -145,7 +154,7 @@ public class UploadServiceImpl implements UploadService {
         uploadBean.setUserPath(uploadBase64.getUserPath());
 
         //保存文件到服务器
-        File file = getFileSavePath(uploadBean);
+        File file = getTargetFile(uploadBean);
         String key = uploadBase64.getKey();
         uploadBean.setKey(key);
 
@@ -221,5 +230,23 @@ public class UploadServiceImpl implements UploadService {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public UploadBean uploadWithBlock(UploadBean uploadBean,
+                                String md5,
+                                Long size,
+                                Integer chunks,
+                                Integer chunk,
+                                MultipartFile file) throws IOException {
+        String fileName = ChunkedUploadUtils.getFileName(file,md5, chunks);
+
+        String path = getTargetFilePath(uploadBean);
+        ChunkedUploadUtils.writeWithBlock(path + fileName, size, file.getInputStream(), file.getSize(), chunks, chunk);
+        ChunkedUploadUtils.addChunk(md5,chunk);
+        if (ChunkedUploadUtils.isUploaded(md5)) {
+            ChunkedUploadUtils.removeKey(md5);
+        }
+
+        return uploadBean;
     }
 }
