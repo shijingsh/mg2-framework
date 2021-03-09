@@ -9,10 +9,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -56,4 +60,35 @@ public class UploadController{
         return JsonResponse.success(list, null);
     }
 
+    @ResponseBody
+    @RequestMapping("/uploadBig")
+    public String uploadBig(HttpServletRequest request,String userPath,String md5,
+                            Long size,
+                            Integer chunks,
+                            Integer chunk) {
+
+        MultipartHttpServletRequest mulRequest = (MultipartHttpServletRequest) (request);
+
+        Map<String, MultipartFile> fileMap = mulRequest.getFileMap();
+
+        Iterator<String> it = fileMap.keySet().iterator();
+        UploadBean uploadBean = new UploadBean();
+        if (it.hasNext()) {
+            String key = it.next();
+            uploadBean.setKey(key);
+            uploadBean.setUserPath(userPath);
+            MultipartFile multipartFile = fileMap.get(key);
+
+            try {
+                uploadService.uploadWithBlock(uploadBean, md5,
+                       size,
+                       chunks,
+                       chunk,multipartFile);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return JsonResponse.success(uploadBean, null);
+    }
 }
