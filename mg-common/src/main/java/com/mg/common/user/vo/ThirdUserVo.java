@@ -5,7 +5,7 @@ package com.mg.common.user.vo;
  * Created by liukefu on 2018/8/11.
  */
 public class ThirdUserVo implements java.io.Serializable{
-    private String userId;
+    private String loginName;
     private String userName;
     private String accessToken;
     private String userAvatar;
@@ -16,12 +16,17 @@ public class ThirdUserVo implements java.io.Serializable{
      */
     private String userToken;
 
-    public String getUserId() {
-        return userId;
+    /**
+     * 最后登录平台
+     */
+    private String lastLoginPlatform;
+
+    public String getLoginName() {
+        return loginName;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setLoginName(String loginName) {
+        this.loginName = loginName;
     }
 
     public String getUserName() {
@@ -70,5 +75,13 @@ public class ThirdUserVo implements java.io.Serializable{
 
     public void setUserToken(String userToken) {
         this.userToken = userToken;
+    }
+
+    public String getLastLoginPlatform() {
+        return lastLoginPlatform;
+    }
+
+    public void setLastLoginPlatform(String lastLoginPlatform) {
+        this.lastLoginPlatform = lastLoginPlatform;
     }
 }

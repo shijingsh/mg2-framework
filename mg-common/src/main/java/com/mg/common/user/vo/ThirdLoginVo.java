@@ -10,6 +10,8 @@ public class ThirdLoginVo implements java.io.Serializable{
     String gender;
     String mobile;
     String from;
+    String lastLoginPlatform;
+
     public String getCode() {
         return code;
     }
@@ -80,5 +82,13 @@ public class ThirdLoginVo implements java.io.Serializable{
 
     public void setFrom(String from) {
         this.from = from;
+    }
+
+    public String getLastLoginPlatform() {
+        return lastLoginPlatform;
+    }
+
+    public void setLastLoginPlatform(String lastLoginPlatform) {
+        this.lastLoginPlatform = lastLoginPlatform;
     }
 }

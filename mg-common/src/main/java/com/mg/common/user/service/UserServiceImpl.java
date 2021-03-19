@@ -279,12 +279,17 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     public UserEntity saveOrGetThirdUser(ThirdUserVo thirdUserVo) {
-       UserEntity userEntity =  getUser(thirdUserVo.getUserId());
+       UserEntity userEntity =  getUser(thirdUserVo.getLoginName());
        if(userEntity == null){
             //没有这创建帐户
            userEntity = new UserEntity();
-           userEntity.setLoginName(thirdUserVo.getUserId());
-           userEntity.setName(thirdUserVo.getUserName());
+           userEntity.setLoginName(thirdUserVo.getLoginName());
+           if(StringUtils.isNotBlank(thirdUserVo.getUserName())){
+               userEntity.setName(thirdUserVo.getUserName());
+           }else{
+               userEntity.setName(thirdUserVo.getMobile());
+           }
+
            userEntity.setHeadPortrait(thirdUserVo.getUserAvatar());
            userEntity.setPassword(MD5.GetMD5Code(UserEntity.DEFAULT_PASSWORD));
            userEntity.setAccessToken(thirdUserVo.getAccessToken());

@@ -88,6 +88,7 @@ public class LoginController {
             return JsonResponse.error(100000, e.getMessage());
         }
         UserEntity user = userService.getUserById(UserHolder.getLoginUserId());
+        user.setLastLoginPlatform(userEntity.getLastLoginPlatform());
         userService.updateUserLastLoginDate(user);
 
         return JsonResponse.success(user, null);
@@ -99,10 +100,12 @@ public class LoginController {
 
         String jsonString = WebUtil.getJsonBody(req);
         ThirdUserVo thirdUserVo = JSON.parseObject(jsonString, ThirdUserVo.class);
-        if (StringUtils.isBlank(thirdUserVo.getUserId()) || StringUtils.isBlank(thirdUserVo.getAccessToken())) {
+        if (StringUtils.isBlank(thirdUserVo.getLoginName()) || StringUtils.isBlank(thirdUserVo.getAccessToken())) {
             return JsonResponse.error(100000, "没有第三方授权信息。");
         }
-
+        if (StringUtils.isBlank(thirdUserVo.getMobile())) {
+            return JsonResponse.error(100001, "手机号码不能为空。");
+        }
 
         Subject subject = SecurityUtils.getSubject();
         //判断是否启用多实例
@@ -125,6 +128,7 @@ public class LoginController {
             return JsonResponse.error(100000, e.getMessage());
         }
         UserEntity user = userService.getUserById(UserHolder.getLoginUserId());
+        user.setLastLoginPlatform(thirdUserVo.getLastLoginPlatform());
         userService.updateUserLastLoginDate(user);
 
         return JsonResponse.success(user, null);
@@ -170,7 +174,12 @@ public class LoginController {
         String avatarUrl = loginVo.getAvatarUrl();
         String gender = loginVo.getGender();
         String mobile = loginVo.getMobile();
-
+        if (StringUtils.isBlank(code)) {
+            return JsonResponse.error(100000, "微信code不能为空。");
+        }
+        if (StringUtils.isBlank(mobile)) {
+            return JsonResponse.error(100001, "手机号码不能为空。");
+        }
         if (StringUtils.isNotBlank(code)){
             if(StringUtils.isBlank(appid)){
                 appid = PropertyConfigurer.getConfig("weixin.appid");
@@ -207,7 +216,7 @@ public class LoginController {
                     String sessionKey = jsonObject.getString("session_key");
 
                     ThirdUserVo thirdUserVo = new ThirdUserVo();
-                    thirdUserVo.setUserId(userId);
+                    thirdUserVo.setLoginName(userId);
                     thirdUserVo.setAccessToken(sessionKey);
                     thirdUserVo.setUserAvatar(avatarUrl);
                     thirdUserVo.setUserName(nickName);
@@ -221,6 +230,7 @@ public class LoginController {
                     return JsonResponse.error(100000, e.getMessage());
                 }
                 UserEntity user = userService.getUserById(UserHolder.getLoginUserId());
+                user.setLastLoginPlatform(loginVo.getLastLoginPlatform());
                 userService.updateUserLastLoginDate(user);
 
                 return JsonResponse.success(user, null);

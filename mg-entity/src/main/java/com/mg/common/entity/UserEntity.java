@@ -45,6 +45,10 @@ public class UserEntity extends ExpandEntity {
      */
     protected Date lastLoginDate;
     /**
+     * 最后登录平台
+     */
+    private String lastLoginPlatform;
+    /**
      * 头像
      */
     @Lob
@@ -176,6 +180,14 @@ public class UserEntity extends ExpandEntity {
 
     public void setUserToken(String userToken) {
         this.userToken = userToken;
+    }
+
+    public String getLastLoginPlatform() {
+        return lastLoginPlatform;
+    }
+
+    public void setLastLoginPlatform(String lastLoginPlatform) {
+        this.lastLoginPlatform = lastLoginPlatform;
     }
 
     public Date getLastLoginDate() {
