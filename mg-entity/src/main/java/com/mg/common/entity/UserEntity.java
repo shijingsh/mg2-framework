@@ -69,6 +69,8 @@ public class UserEntity extends ExpandEntity {
     /**
      * 第三方登录token
      */
+    @Lob
+    @Basic(fetch = FetchType.EAGER)
     private String accessToken;
 
     /**
