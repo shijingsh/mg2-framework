@@ -40,7 +40,9 @@ public interface UserService {
      * @param loginName
      * @return
      */
-    public UserEntity getUser(String loginName);
+    UserEntity getUser(String loginName);
+
+    UserEntity getUserByMobile(String mobile);
 
     /**
      * 根据用户主键获取用户对象

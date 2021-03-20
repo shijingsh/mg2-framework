@@ -328,7 +328,10 @@ public class LoginController {
         if (user == null) {
             return JsonResponse.error(100003, "用户尚未注册");
         }
-
+        UserEntity userMobile = userService.getUserByMobile(userEntity.getMobile());
+        if (userMobile != null) {
+            return JsonResponse.error(100003, "手机号码已被其他用户占用，请更换");
+        }
         String code = userEntity.getVerifyCode();
         if(smsService.validateCode(userEntity.getMobile(),code)){
             user.setMobile(userEntity.getMobile());

@@ -46,6 +46,22 @@ public class UserServiceImpl implements UserService {
         return null;
     }
 
+    public UserEntity getUserByMobile(String mobile) {
+
+        JPAQuery query = getQuery();
+        QUserEntity qUserEntity = QUserEntity.userEntity;
+        query.from(qUserEntity);
+
+        query.where(
+                qUserEntity.loginName.eq(mobile).or(qUserEntity.mobile.eq(mobile))
+        );
+        List<UserEntity> users = query.fetch();
+        if (users != null && users.size()>0) {
+            return users.get(0);
+        }
+        return null;
+    }
+
     public UserEntity getUser(String loginName, String password) {
 
         JPAQuery query = getQuery();
