@@ -103,9 +103,7 @@ public class LoginController {
         if (StringUtils.isBlank(thirdUserVo.getLoginName()) || StringUtils.isBlank(thirdUserVo.getAccessToken())) {
             return JsonResponse.error(100000, "没有第三方授权信息。");
         }
-        if (StringUtils.isBlank(thirdUserVo.getMobile())) {
-            return JsonResponse.error(100001, "手机号码不能为空。");
-        }
+
 
         Subject subject = SecurityUtils.getSubject();
         //判断是否启用多实例
@@ -121,6 +119,9 @@ public class LoginController {
         }
         try {
             UserEntity userEntity = userService.saveOrGetThirdUser(thirdUserVo);
+            if (StringUtils.isBlank(userEntity.getMobile())) {
+                return JsonResponse.error(100001, "手机号码不能为空。");
+            }
             UsernamePasswordToken token = new UsernamePasswordToken(userEntity.getLoginName(), userEntity.getPassword());
             subject.login(token);
         } catch (Exception e) {
