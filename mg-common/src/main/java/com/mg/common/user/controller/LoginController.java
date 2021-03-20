@@ -168,7 +168,7 @@ public class LoginController {
 
         ThirdLoginVo loginVo = WebUtil.getJsonBody(req, ThirdLoginVo.class);
 
-        System.out.println("weixinLogin登录中："+loginVo.getFrom());
+        System.out.println("weixinLogin登录中："+loginVo.getLastLoginPlatform());
         String code = loginVo.getCode();
         String userToken = loginVo.getUserToken();
         String appid = loginVo.getAppid();
@@ -177,6 +177,7 @@ public class LoginController {
         String avatarUrl = loginVo.getAvatarUrl();
         String gender = loginVo.getGender();
         String mobile = loginVo.getMobile();
+        String email = loginVo.getEmail();
         if (StringUtils.isBlank(code)) {
             return JsonResponse.error(100000, "微信code不能为空。");
         }
@@ -210,21 +211,23 @@ public class LoginController {
                     subject.getSession().setAttribute(Constants.TENANT_ID, instanceEntity.getId());
                 }
                 try {
-                    String userId = jsonObject.getString("unionid");
-                    System.out.println("weixinLogin返回unionid："+userId);
-                    if (StringUtils.isBlank(userId)){
-                        userId =  jsonObject.getString("openid");
-                        System.out.println("weixinLogin返回openid："+userId);
+                    String unionId = jsonObject.getString("unionid");
+                    System.out.println("weixinLogin返回unionid："+unionId);
+                    if (StringUtils.isBlank(unionId)){
+                        unionId =  jsonObject.getString("openid");
+                        System.out.println("weixinLogin返回openid："+unionId);
                     }
                     String sessionKey = jsonObject.getString("session_key");
 
                     ThirdUserVo thirdUserVo = new ThirdUserVo();
-                    thirdUserVo.setLoginName(userId);
+                    thirdUserVo.setUnionId(unionId);
+                    thirdUserVo.setLoginName(mobile);
                     thirdUserVo.setAccessToken(sessionKey);
                     thirdUserVo.setUserAvatar(avatarUrl);
                     thirdUserVo.setUserName(nickName);
                     thirdUserVo.setUserGender(gender);
                     thirdUserVo.setMobile(mobile);
+                    thirdUserVo.setEmail(email);
                     UserEntity userEntity = userService.saveOrGetThirdUser(thirdUserVo);
                     UsernamePasswordToken token = new UsernamePasswordToken(userEntity.getLoginName(), userEntity.getPassword());
                     subject.login(token);
@@ -335,6 +338,9 @@ public class LoginController {
         String code = userEntity.getVerifyCode();
         if(smsService.validateCode(userEntity.getMobile(),code)){
             user.setMobile(userEntity.getMobile());
+            if(StringUtils.isBlank(user.getLoginName())){
+                user.setLoginName(userEntity.getMobile());
+            }
             userService.updateUser(user);
         }else{
             return JsonResponse.error(100004, "验证码输入错误");

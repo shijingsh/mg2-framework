@@ -5,12 +5,14 @@ package com.mg.common.user.vo;
  * Created by liukefu on 2018/8/11.
  */
 public class ThirdUserVo implements java.io.Serializable{
+    private String unionId;
     private String loginName;
     private String userName;
     private String accessToken;
     private String userAvatar;
     private String userGender;
     private String mobile;
+    private String email;
     /**
      * 多实例用户token
      */
@@ -20,6 +22,22 @@ public class ThirdUserVo implements java.io.Serializable{
      * 最后登录平台
      */
     private String lastLoginPlatform;
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getUnionId() {
+        return unionId;
+    }
+
+    public void setUnionId(String unionId) {
+        this.unionId = unionId;
+    }
 
     public String getLoginName() {
         return loginName;

@@ -62,6 +62,23 @@ public class UserServiceImpl implements UserService {
         return null;
     }
 
+
+    public UserEntity getUserByUnionId(String unionId) {
+
+        JPAQuery query = getQuery();
+        QUserEntity qUserEntity = QUserEntity.userEntity;
+        query.from(qUserEntity);
+
+        query.where(
+                qUserEntity.unionId.eq(unionId)
+        );
+        List<UserEntity> users = query.fetch();
+        if (users != null && users.size()>0) {
+            return users.get(0);
+        }
+        return null;
+    }
+
     public UserEntity getUser(String loginName, String password) {
 
         JPAQuery query = getQuery();
@@ -295,11 +312,25 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     public UserEntity saveOrGetThirdUser(ThirdUserVo thirdUserVo) {
-       UserEntity userEntity =  getUser(thirdUserVo.getLoginName());
+       UserEntity userEntity =  null;
+       if(StringUtils.isNotBlank(thirdUserVo.getUnionId())){
+           userEntity =  getUserByUnionId(thirdUserVo.getUnionId());
+       }
+
+       if(userEntity==null && StringUtils.isNotBlank(thirdUserVo.getLoginName())){
+           userEntity =  getUser(thirdUserVo.getLoginName());
+       }
+
        if(userEntity == null){
             //没有这创建帐户
            userEntity = new UserEntity();
-           userEntity.setLoginName(thirdUserVo.getLoginName());
+           if(StringUtils.isNotBlank(thirdUserVo.getLoginName())){
+               userEntity.setLoginName(thirdUserVo.getLoginName());
+           }else if(StringUtils.isNotBlank(thirdUserVo.getMobile())){
+               userEntity.setLoginName(thirdUserVo.getMobile());
+           }
+
+           userEntity.setUnionId(thirdUserVo.getUnionId());
            if(StringUtils.isNotBlank(thirdUserVo.getUserName())){
                userEntity.setName(thirdUserVo.getUserName());
            }else{
@@ -310,17 +341,24 @@ public class UserServiceImpl implements UserService {
            userEntity.setPassword(MD5.GetMD5Code(UserEntity.DEFAULT_PASSWORD));
            userEntity.setAccessToken(thirdUserVo.getAccessToken());
            userEntity.setMobile(thirdUserVo.getMobile());
+           userEntity.setEmail(thirdUserVo.getEmail());
 
            userDao.save(userEntity);
        }else{
+           if(StringUtils.isNotBlank(thirdUserVo.getUnionId())){
+               userEntity.setUnionId(thirdUserVo.getUnionId());
+           }
            if(StringUtils.isNotBlank(thirdUserVo.getUserName())){
                userEntity.setName(thirdUserVo.getUserName());
            }
            if(StringUtils.isNotBlank(thirdUserVo.getUserAvatar())){
                userEntity.setHeadPortrait(thirdUserVo.getUserAvatar());
            }
-           if(StringUtils.isNotBlank(thirdUserVo.getMobile())){
-               userEntity.setMobile(thirdUserVo.getMobile());
+           //if(StringUtils.isNotBlank(thirdUserVo.getMobile())){
+           //    userEntity.setMobile(thirdUserVo.getMobile());
+           //}
+           if(StringUtils.isNotBlank(thirdUserVo.getEmail())){
+               userEntity.setEmail(thirdUserVo.getEmail());
            }
            userEntity.setAccessToken(thirdUserVo.getAccessToken());
            userDao.save(userEntity);

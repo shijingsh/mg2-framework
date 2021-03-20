@@ -20,6 +20,8 @@ public class UserEntity extends ExpandEntity {
     public static String DEFAULT_PASSWORD = "123456";
     /**登录名 */
     private String loginName;
+    /**登录名 */
+    private String unionId;
     /**姓名 */
     private String name;
     /**手机号 */
@@ -115,6 +117,14 @@ public class UserEntity extends ExpandEntity {
     }
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getUnionId() {
+        return unionId;
+    }
+
+    public void setUnionId(String unionId) {
+        this.unionId = unionId;
     }
 
     public String getPassword() {
