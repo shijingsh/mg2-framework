@@ -328,11 +328,9 @@ public class LoginController {
         if (user == null) {
             return JsonResponse.error(100003, "用户尚未注册");
         }
-        if(StringUtils.isBlank(user.getMobile())){
-            user.setMobile(user.getLoginName());
-        }
+
         String code = userEntity.getVerifyCode();
-        if(smsService.validateCode(user.getMobile(),code)){
+        if(smsService.validateCode(userEntity.getMobile(),code)){
             user.setMobile(userEntity.getMobile());
             userService.updateUser(user);
         }else{
