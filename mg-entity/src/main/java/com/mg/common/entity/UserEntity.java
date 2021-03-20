@@ -92,6 +92,11 @@ public class UserEntity extends ExpandEntity {
 
     @Transient
     private String companyName;
+    /**
+     * 短信验证码
+     */
+    @Transient
+    private String verifyCode;
 
     public UserEntity(){}
 
@@ -252,6 +257,14 @@ public class UserEntity extends ExpandEntity {
 
     public void setLongitude(BigDecimal longitude) {
         this.longitude = longitude;
+    }
+
+    public String getVerifyCode() {
+        return verifyCode;
+    }
+
+    public void setVerifyCode(String verifyCode) {
+        this.verifyCode = verifyCode;
     }
 
     public String getAccessToken() {

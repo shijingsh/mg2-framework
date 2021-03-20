@@ -2,6 +2,7 @@ package com.mg.common.user.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.mg.common.components.SmsService;
 import com.mg.common.entity.InstanceEntity;
 import com.mg.common.shiro.service.UserRealm;
 import com.mg.common.user.service.UserService;
@@ -45,7 +46,8 @@ public class LoginController {
     private UserService userService;
     @Autowired
     private InstanceService instanceService;
-
+    @Autowired
+    private SmsService smsService;
     /**
      * 清理权限缓存
      */
@@ -305,4 +307,38 @@ public class LoginController {
 
         return JsonResponse.success(info, null);
     }
+
+
+    @ResponseBody
+    @RequestMapping("/bindingMobile")
+    public String bindingMobile() {
+
+        String jsonString = WebUtil.getJsonBody(req);
+        UserEntity userEntity = JSON.parseObject(jsonString, UserEntity.class);
+        if (StringUtils.isBlank(userEntity.getLoginName())) {
+            return JsonResponse.error(100000, "用户名不能为空。");
+        }
+        if (StringUtils.isBlank(userEntity.getMobile())) {
+            return JsonResponse.error(100001, "手机号码不能为空。");
+        }
+        if (StringUtils.isBlank(userEntity.getVerifyCode())) {
+            return JsonResponse.error(100002, "验证码不能为空。");
+        }
+        UserEntity user = userService.getUser(userEntity.getLoginName());
+        if (user == null) {
+            return JsonResponse.error(100003, "用户尚未注册");
+        }
+        if(StringUtils.isBlank(user.getMobile())){
+            user.setMobile(user.getLoginName());
+        }
+        String code = userEntity.getVerifyCode();
+        if(smsService.validateCode(user.getMobile(),code)){
+            user.setMobile(userEntity.getMobile());
+            userService.updateUser(user);
+        }else{
+            return JsonResponse.error(100004, "验证码输入错误");
+        }
+        return JsonResponse.success(user);
+    }
+
 }
