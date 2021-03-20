@@ -341,6 +341,9 @@ public class LoginController {
             if(StringUtils.isBlank(user.getLoginName())){
                 user.setLoginName(userEntity.getMobile());
             }
+            if(StringUtils.isBlank(user.getName())){
+                user.setName(userEntity.getMobile());
+            }
             userService.updateUser(user);
         }else{
             return JsonResponse.error(100004, "验证码输入错误");
