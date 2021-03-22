@@ -176,14 +176,12 @@ public class LoginController {
         String nickName = loginVo.getNickName();
         String avatarUrl = loginVo.getAvatarUrl();
         String gender = loginVo.getGender();
-        String mobile = loginVo.getMobile();
+        //String mobile = loginVo.getMobile();
         String email = loginVo.getEmail();
         if (StringUtils.isBlank(code)) {
             return JsonResponse.error(100000, "微信code不能为空。");
         }
-        if (StringUtils.isBlank(mobile)) {
-            return JsonResponse.error(100001, "手机号码不能为空。");
-        }
+
         if (StringUtils.isNotBlank(code)){
             if(StringUtils.isBlank(appid)){
                 appid = PropertyConfigurer.getConfig("weixin.appid");
@@ -217,7 +215,20 @@ public class LoginController {
                         unionId =  jsonObject.getString("openid");
                         System.out.println("weixinLogin返回openid："+unionId);
                     }
+                    String mobile = null;
                     String sessionKey = jsonObject.getString("session_key");
+                    if(StringUtils.isNotBlank(loginVo.getEncryptedData()) && StringUtils.isNotBlank(loginVo.getIv())){
+                        AESGetPhoneNumber aes = new AESGetPhoneNumber(loginVo.getEncryptedData(),sessionKey,loginVo.getIv());
+                        PhoneDecryptInfo info = aes.decrypt();
+                        if (null==info){
+                            System.out.println("error");
+                        }else {
+                            System.out.println(info.toString());
+                        }
+                        if(info!=null && StringUtils.isNotBlank(info.getPhoneNumber())){
+                            mobile = info.getPhoneNumber();
+                        }
+                    }
 
                     ThirdUserVo thirdUserVo = new ThirdUserVo();
                     thirdUserVo.setUnionId(unionId);
@@ -229,6 +240,9 @@ public class LoginController {
                     thirdUserVo.setMobile(mobile);
                     thirdUserVo.setEmail(email);
                     UserEntity userEntity = userService.saveOrGetThirdUser(thirdUserVo);
+                    if (StringUtils.isBlank(userEntity.getMobile())) {
+                        return JsonResponse.error(100001, "手机号码不能为空。");
+                    }
                     UsernamePasswordToken token = new UsernamePasswordToken(userEntity.getLoginName(), userEntity.getPassword());
                     subject.login(token);
                 } catch (Exception e) {

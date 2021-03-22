@@ -1,16 +1,21 @@
 package com.mg.common.user.vo;
 
 public class ThirdLoginVo implements java.io.Serializable{
-    String code;
-    String userToken;
-    String appid;
-    String secret;
-    String nickName;
-    String avatarUrl;
-    String gender;
-    String mobile;
-    String email;
-    String lastLoginPlatform;
+    private String code;
+    private String userToken;
+    private String appid;
+    private String secret;
+    private String nickName;
+    private String avatarUrl;
+    private String gender;
+    private String mobile;
+    private String email;
+    private String lastLoginPlatform;
+    /**
+     * 加密手机号码
+     */
+    private String encryptedData;
+    private String iv;
 
     public String getEmail() {
         return email;
@@ -91,5 +96,21 @@ public class ThirdLoginVo implements java.io.Serializable{
 
     public void setLastLoginPlatform(String lastLoginPlatform) {
         this.lastLoginPlatform = lastLoginPlatform;
+    }
+
+    public String getEncryptedData() {
+        return encryptedData;
+    }
+
+    public void setEncryptedData(String encryptedData) {
+        this.encryptedData = encryptedData;
+    }
+
+    public String getIv() {
+        return iv;
+    }
+
+    public void setIv(String iv) {
+        this.iv = iv;
     }
 }
