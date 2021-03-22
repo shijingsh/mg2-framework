@@ -89,9 +89,11 @@ public class LoginController {
             e.printStackTrace();
             return JsonResponse.error(100000, e.getMessage());
         }
-        UserEntity user = userService.getUserById(UserHolder.getLoginUserId());
-        user.setLastLoginPlatform(userEntity.getLastLoginPlatform());
-        userService.updateUserLastLoginDate(user);
+        UserEntity user = userService.getUser(userEntity.getLoginName());
+        if(user!=null){
+            user.setLastLoginPlatform(userEntity.getLastLoginPlatform());
+            userService.updateUserLastLoginDate(user);
+        }
 
         return JsonResponse.success(user, null);
     }
@@ -119,8 +121,9 @@ public class LoginController {
         if (instanceEntity != null) {
             subject.getSession().setAttribute(Constants.TENANT_ID, instanceEntity.getId());
         }
+        UserEntity userEntity = null;
         try {
-            UserEntity userEntity = userService.saveOrGetThirdUser(thirdUserVo);
+            userEntity = userService.saveOrGetThirdUser(thirdUserVo);
             if (StringUtils.isBlank(userEntity.getMobile())) {
                 return JsonResponse.error(100001, "手机号码不能为空。");
             }
@@ -130,37 +133,14 @@ public class LoginController {
             e.printStackTrace();
             return JsonResponse.error(100000, e.getMessage());
         }
-        UserEntity user = userService.getUserById(UserHolder.getLoginUserId());
-        user.setLastLoginPlatform(thirdUserVo.getLastLoginPlatform());
-        userService.updateUserLastLoginDate(user);
-
-        return JsonResponse.success(user, null);
-    }
-
-    /**
-     * 获取公司实例
-     *
-     * @param userEntity
-     * @return
-     */
-    protected String getInstanceUserToken(UserEntity userEntity) {
-        if (StringUtils.isNotBlank(userEntity.getUserToken())) {
-            return userEntity.getUserToken();
+        if(userEntity!=null){
+            userEntity.setLastLoginPlatform(thirdUserVo.getLastLoginPlatform());
+            userService.updateUserLastLoginDate(userEntity);
         }
 
-        return null;
+        return JsonResponse.success(userEntity, null);
     }
 
-    /**
-     * 退出
-     */
-    @ResponseBody
-    @RequestMapping("/loginOut")
-    public String loginOut() {
-        Subject subject = SecurityUtils.getSubject();
-        subject.logout();
-        return JsonResponse.success();
-    }
 
     @ResponseBody
     @RequestMapping("/weixinLogin")
@@ -208,6 +188,7 @@ public class LoginController {
                 if (instanceEntity != null) {
                     subject.getSession().setAttribute(Constants.TENANT_ID, instanceEntity.getId());
                 }
+                UserEntity userEntity = null;
                 try {
                     String unionId = jsonObject.getString("unionid");
                     System.out.println("weixinLogin返回unionid："+unionId);
@@ -239,7 +220,7 @@ public class LoginController {
                     thirdUserVo.setUserGender(gender);
                     thirdUserVo.setMobile(mobile);
                     thirdUserVo.setEmail(email);
-                    UserEntity userEntity = userService.saveOrGetThirdUser(thirdUserVo);
+                    userEntity = userService.saveOrGetThirdUser(thirdUserVo);
                     if (StringUtils.isBlank(userEntity.getMobile())) {
                         return JsonResponse.error(100001, "手机号码不能为空。");
                     }
@@ -249,17 +230,42 @@ public class LoginController {
                     e.printStackTrace();
                     return JsonResponse.error(100000, e.getMessage());
                 }
-                UserEntity user = userService.getUserById(UserHolder.getLoginUserId());
-                user.setLastLoginPlatform(loginVo.getLastLoginPlatform());
-                userService.updateUserLastLoginDate(user);
+                if(userEntity!=null){
+                    userEntity.setLastLoginPlatform(loginVo.getLastLoginPlatform());
+                    userService.updateUserLastLoginDate(userEntity);
+                }
 
-                return JsonResponse.success(user, null);
+                return JsonResponse.success(userEntity, null);
             }
         }
 
         return JsonResponse.success(null, null);
     }
 
+    /**
+     * 获取公司实例
+     *
+     * @param userEntity
+     * @return
+     */
+    protected String getInstanceUserToken(UserEntity userEntity) {
+        if (StringUtils.isNotBlank(userEntity.getUserToken())) {
+            return userEntity.getUserToken();
+        }
+
+        return null;
+    }
+
+    /**
+     * 退出
+     */
+    @ResponseBody
+    @RequestMapping("/loginOut")
+    public String loginOut() {
+        Subject subject = SecurityUtils.getSubject();
+        subject.logout();
+        return JsonResponse.success();
+    }
 
     @ResponseBody
     @RequestMapping("/weixinToken")
