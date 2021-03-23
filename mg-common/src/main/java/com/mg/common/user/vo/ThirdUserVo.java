@@ -14,6 +14,7 @@ public class ThirdUserVo implements java.io.Serializable{
     private String userGender;
     private String mobile;
     private String email;
+    private String verifyCode;
     /**
      * 多实例用户token
      */
@@ -46,6 +47,14 @@ public class ThirdUserVo implements java.io.Serializable{
 
     public void setAppleId(String appleId) {
         this.appleId = appleId;
+    }
+
+    public String getVerifyCode() {
+        return verifyCode;
+    }
+
+    public void setVerifyCode(String verifyCode) {
+        this.verifyCode = verifyCode;
     }
 
     public String getLoginName() {

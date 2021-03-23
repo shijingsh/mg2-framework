@@ -131,12 +131,20 @@ public class LoginController {
         }
         UserEntity userEntity = null;
         try {
-            if (StringUtils.isNotBlank(userEntity.getMobile())) {
-                UserEntity mobileUser = userService.getUserByMobile(userEntity.getMobile());
+            if (StringUtils.isNotBlank(thirdUserVo.getMobile())) {
+                UserEntity mobileUser = userService.getUserByMobile(thirdUserVo.getMobile());
                 if (mobileUser!=null) {
                     return JsonResponse.error(100002, "手机号码已被其他用户占用，请更换。");
                 }
-                userEntity = userService.saveThirdUser(thirdUserVo);
+                String code = thirdUserVo.getVerifyCode();
+                if (StringUtils.isBlank(code)) {
+                    return JsonResponse.error(100002, "验证码不能为空。");
+                }
+                if(smsService.validateCode(thirdUserVo.getMobile(),code)){
+                    userEntity = userService.saveThirdUser(thirdUserVo);
+                }else{
+                    return JsonResponse.error(100002, "验证码输入错误");
+                }
             }else {
                 userEntity = userService.getThirdUser(thirdUserVo);
                 if(userEntity==null || StringUtils.isBlank(userEntity.getMobile())){
