@@ -193,7 +193,7 @@ public class LoginController {
             String url = "https://api.weixin.qq.com/sns/jscode2session?appid="+appid+"&secret="+secret+"&js_code=" + code + "&grant_type=authorization_code";
 
             String json = HttpClientUtil.sendGetRequest(url);
-            System.out.println("weixinLogin返回：");
+            System.out.println("jscode2session返回：");
             System.out.println(json);
             JSONObject jsonObject = JSON.parseObject(json);
             String errcode = jsonObject.getString("errcode");
@@ -225,7 +225,9 @@ public class LoginController {
                         PhoneDecryptInfo info = aes.decrypt();
                         if (null==info){
                             System.out.println("error");
+                            return JsonResponse.error(100003, "解密微信手机号发生错误，会话超时。");
                         }else {
+                            System.out.println("======================解密微信手机号========================");
                             System.out.println(info.toString());
                         }
                         if(info!=null && StringUtils.isNotBlank(info.getPhoneNumber())){
