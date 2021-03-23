@@ -44,6 +44,9 @@ public interface UserService {
 
     UserEntity getUserByMobile(String mobile);
 
+    UserEntity getUserByUnionId(String unionId);
+
+    UserEntity getUserByAppleId(String appleId);
     /**
      * 根据用户主键获取用户对象
      * @param id 用户ID
@@ -111,5 +114,7 @@ public interface UserService {
 
     UserEntity getUserByRequest(HttpServletRequest request);
 
-    UserEntity saveOrGetThirdUser(ThirdUserVo thirdUserVo);
+    UserEntity getThirdUser(ThirdUserVo thirdUserVo);
+
+    UserEntity saveThirdUser(ThirdUserVo thirdUserVo);
 }

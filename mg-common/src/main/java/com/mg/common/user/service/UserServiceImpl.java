@@ -79,6 +79,23 @@ public class UserServiceImpl implements UserService {
         return null;
     }
 
+
+    public UserEntity getUserByAppleId(String appleId) {
+
+        JPAQuery query = getQuery();
+        QUserEntity qUserEntity = QUserEntity.userEntity;
+        query.from(qUserEntity);
+
+        query.where(
+                qUserEntity.appleId.eq(appleId)
+        );
+        List<UserEntity> users = query.fetch();
+        if (users != null && users.size()>0) {
+            return users.get(0);
+        }
+        return null;
+    }
+
     public UserEntity getUser(String loginName, String password) {
 
         JPAQuery query = getQuery();
@@ -310,64 +327,48 @@ public class UserServiceImpl implements UserService {
         return null;
     }
 
+    public UserEntity getThirdUser(ThirdUserVo thirdUserVo) {
+        UserEntity userEntity =  null;
+        if(StringUtils.isNotBlank(thirdUserVo.getUnionId())){
+            userEntity =  getUserByUnionId(thirdUserVo.getUnionId());
+        }
+        if(StringUtils.isNotBlank(thirdUserVo.getAppleId())){
+            userEntity =  getUserByAppleId(thirdUserVo.getAppleId());
+        }
+        /*if(userEntity==null && StringUtils.isNotBlank(thirdUserVo.getLoginName())){
+            userEntity =  getUser(thirdUserVo.getLoginName());
+        }*/
+
+        return userEntity;
+    }
+
+
     @Transactional
-    public UserEntity saveOrGetThirdUser(ThirdUserVo thirdUserVo) {
-       UserEntity userEntity =  null;
-       if(StringUtils.isNotBlank(thirdUserVo.getUnionId())){
-           userEntity =  getUserByUnionId(thirdUserVo.getUnionId());
-       }
+    public UserEntity saveThirdUser(ThirdUserVo thirdUserVo) {
 
-       if(userEntity==null && StringUtils.isNotBlank(thirdUserVo.getLoginName())){
-           userEntity =  getUser(thirdUserVo.getLoginName());
-       }
+        //没有这创建帐户
+        UserEntity userEntity = new UserEntity();
+        if(StringUtils.isNotBlank(thirdUserVo.getLoginName())){
+            userEntity.setLoginName(thirdUserVo.getLoginName());
+        }else{
+            userEntity.setLoginName(thirdUserVo.getMobile());
+        }
+        userEntity.setAppleId(thirdUserVo.getAppleId());
+        userEntity.setUnionId(thirdUserVo.getUnionId());
+        if(StringUtils.isNotBlank(thirdUserVo.getUserName())){
+            userEntity.setName(thirdUserVo.getUserName());
+        }else{
+            userEntity.setName(thirdUserVo.getMobile());
+        }
 
-       if(userEntity == null){
-            //没有这创建帐户
-           userEntity = new UserEntity();
-           if(StringUtils.isNotBlank(thirdUserVo.getLoginName())){
-               userEntity.setLoginName(thirdUserVo.getLoginName());
-           }else if(StringUtils.isNotBlank(thirdUserVo.getMobile())){
-               userEntity.setLoginName(thirdUserVo.getMobile());
-           }
+        userEntity.setHeadPortrait(thirdUserVo.getUserAvatar());
+        userEntity.setPassword(MD5.GetMD5Code(UserEntity.DEFAULT_PASSWORD));
+        userEntity.setAccessToken(thirdUserVo.getAccessToken());
+        userEntity.setMobile(thirdUserVo.getMobile());
+        userEntity.setEmail(thirdUserVo.getEmail());
 
-           userEntity.setUnionId(thirdUserVo.getUnionId());
-           if(StringUtils.isNotBlank(thirdUserVo.getUserName())){
-               userEntity.setName(thirdUserVo.getUserName());
-           }else{
-               userEntity.setName(thirdUserVo.getMobile());
-           }
 
-           userEntity.setHeadPortrait(thirdUserVo.getUserAvatar());
-           userEntity.setPassword(MD5.GetMD5Code(UserEntity.DEFAULT_PASSWORD));
-           userEntity.setAccessToken(thirdUserVo.getAccessToken());
-           userEntity.setMobile(thirdUserVo.getMobile());
-           userEntity.setEmail(thirdUserVo.getEmail());
-
-           userDao.save(userEntity);
-       }else{
-           if(StringUtils.isNotBlank(thirdUserVo.getUnionId())){
-               userEntity.setUnionId(thirdUserVo.getUnionId());
-           }
-           if(StringUtils.isNotBlank(thirdUserVo.getUserName())){
-               userEntity.setName(thirdUserVo.getUserName());
-           }
-           if(StringUtils.isNotBlank(thirdUserVo.getUserAvatar())){
-               userEntity.setHeadPortrait(thirdUserVo.getUserAvatar());
-           }
-           if(StringUtils.isNotBlank(thirdUserVo.getMobile())){
-               userEntity.setMobile(thirdUserVo.getMobile());
-           }
-           if(StringUtils.isNotBlank(thirdUserVo.getEmail())){
-               userEntity.setEmail(thirdUserVo.getEmail());
-           }
-           if(StringUtils.isNotBlank(thirdUserVo.getLoginName())){
-               userEntity.setLoginName(thirdUserVo.getLoginName());
-           }else if(StringUtils.isNotBlank(thirdUserVo.getMobile())){
-               userEntity.setLoginName(thirdUserVo.getMobile());
-           }
-           userEntity.setAccessToken(thirdUserVo.getAccessToken());
-           userDao.save(userEntity);
-       }
+        userDao.save(userEntity);
 
         return userEntity;
     }

@@ -99,6 +99,11 @@ public class LoginController {
         return JsonResponse.success(user, null);
     }
 
+    /**
+     * 微信授权登陆APP
+     * apple 授权登陆APP
+     * @return
+     */
     @ResponseBody
     @RequestMapping("/loginThird")
     public String loginThird() {
@@ -107,10 +112,10 @@ public class LoginController {
         ThirdUserVo thirdUserVo = JSON.parseObject(jsonString, ThirdUserVo.class);
         System.out.println("loginThird登录中：");
         System.out.println(JsonUtils.toJsonStr(thirdUserVo));
-        if (StringUtils.isBlank(thirdUserVo.getLoginName()) || StringUtils.isBlank(thirdUserVo.getAccessToken())) {
+        if ((StringUtils.isBlank(thirdUserVo.getUnionId()) && StringUtils.isBlank(thirdUserVo.getAppleId()) )
+                || StringUtils.isBlank(thirdUserVo.getAccessToken())) {
             return JsonResponse.error(100000, "没有第三方授权信息。");
         }
-
 
         Subject subject = SecurityUtils.getSubject();
         //判断是否启用多实例
@@ -127,14 +132,18 @@ public class LoginController {
         UserEntity userEntity = null;
         try {
             if (StringUtils.isNotBlank(userEntity.getMobile())) {
-            }
-            userEntity = userService.saveOrGetThirdUser(thirdUserVo);
-            if (StringUtils.isBlank(userEntity.getMobile())) {
                 UserEntity mobileUser = userService.getUserByMobile(userEntity.getMobile());
                 if (mobileUser!=null) {
                     return JsonResponse.error(100002, "手机号码已被其他用户占用，请更换。");
                 }
+                userEntity = userService.saveThirdUser(thirdUserVo);
+            }else {
+                userEntity = userService.getThirdUser(thirdUserVo);
+                if(userEntity==null || StringUtils.isBlank(userEntity.getMobile())){
+                    return JsonResponse.error(100001, "手机号码不能为空。");
+                }
             }
+
             UsernamePasswordToken token = new UsernamePasswordToken(userEntity.getLoginName(), userEntity.getPassword());
             subject.login(token);
         } catch (Exception e) {
@@ -150,6 +159,10 @@ public class LoginController {
     }
 
 
+    /**
+     * 小程序登陆
+     * @return
+     */
     @ResponseBody
     @RequestMapping("/weixinLogin")
     public String weixinLogin() {
@@ -165,7 +178,6 @@ public class LoginController {
         String nickName = loginVo.getNickName();
         String avatarUrl = loginVo.getAvatarUrl();
         String gender = loginVo.getGender();
-        //String mobile = loginVo.getMobile();
         String email = loginVo.getEmail();
         if (StringUtils.isBlank(code)) {
             return JsonResponse.error(100000, "微信code不能为空。");
@@ -205,6 +217,7 @@ public class LoginController {
                         unionId =  jsonObject.getString("openid");
                         System.out.println("weixinLogin返回openid："+unionId);
                     }
+
                     String mobile = null;
                     String sessionKey = jsonObject.getString("session_key");
                     if(StringUtils.isNotBlank(loginVo.getEncryptedData()) && StringUtils.isNotBlank(loginVo.getIv())){
@@ -224,6 +237,11 @@ public class LoginController {
                         }
                     }
 
+                    userEntity = userService.getUserByUnionId(unionId);
+                    if (userEntity==null || StringUtils.isBlank(mobile)) {
+                        return JsonResponse.error(100001, "手机号码不能为空。");
+                    }
+
                     ThirdUserVo thirdUserVo = new ThirdUserVo();
                     thirdUserVo.setUnionId(unionId);
                     thirdUserVo.setLoginName(mobile);
@@ -233,10 +251,7 @@ public class LoginController {
                     thirdUserVo.setUserGender(gender);
                     thirdUserVo.setMobile(mobile);
                     thirdUserVo.setEmail(email);
-                    userEntity = userService.saveOrGetThirdUser(thirdUserVo);
-                    if (StringUtils.isBlank(userEntity.getMobile())) {
-                        return JsonResponse.error(100001, "手机号码不能为空。");
-                    }
+                    userEntity = userService.saveThirdUser(thirdUserVo);
                     UsernamePasswordToken token = new UsernamePasswordToken(userEntity.getLoginName(), userEntity.getPassword());
                     subject.login(token);
                 } catch (Exception e) {

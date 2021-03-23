@@ -6,6 +6,7 @@ package com.mg.common.user.vo;
  */
 public class ThirdUserVo implements java.io.Serializable{
     private String unionId;
+    private String appleId;
     private String loginName;
     private String userName;
     private String accessToken;
@@ -37,6 +38,14 @@ public class ThirdUserVo implements java.io.Serializable{
 
     public void setUnionId(String unionId) {
         this.unionId = unionId;
+    }
+
+    public String getAppleId() {
+        return appleId;
+    }
+
+    public void setAppleId(String appleId) {
+        this.appleId = appleId;
     }
 
     public String getLoginName() {
