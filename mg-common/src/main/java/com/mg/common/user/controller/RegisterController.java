@@ -53,7 +53,7 @@ public class RegisterController {
                 if(StringUtils.isNotBlank(registerVo.getName())){
                     user.setName(registerVo.getName());
                 }
-
+                userService.updateUser(user);
                 return JsonResponse.success(user);
             }else{
                 UserEntity userEntity = new UserEntity();
