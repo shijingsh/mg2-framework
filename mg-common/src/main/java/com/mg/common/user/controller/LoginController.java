@@ -133,15 +133,18 @@ public class LoginController {
         try {
             if (StringUtils.isNotBlank(thirdUserVo.getMobile())) {
                 UserEntity mobileUser = userService.getUserByMobile(thirdUserVo.getMobile());
-                if (mobileUser!=null) {
-                    return JsonResponse.error(100002, "手机号码已被其他用户占用，请更换。");
-                }
+
                 String code = thirdUserVo.getVerifyCode();
                 if (StringUtils.isBlank(code)) {
                     return JsonResponse.error(100002, "验证码不能为空。");
                 }
                 if(smsService.validateCode(thirdUserVo.getMobile(),code)){
-                    userEntity = userService.saveThirdUser(thirdUserVo);
+                    if (mobileUser!=null) {
+                        //直接关联已经存在的用户
+                        userEntity = userService.saveThirdUser(thirdUserVo,mobileUser);
+                    }else{
+                        userEntity = userService.saveThirdUser(thirdUserVo);
+                    }
                 }else{
                     return JsonResponse.error(100002, "验证码输入错误");
                 }
@@ -240,16 +243,8 @@ public class LoginController {
                         }
                         if(info!=null && StringUtils.isNotBlank(info.getPhoneNumber())){
                             mobile = info.getPhoneNumber();
-                            UserEntity mobileUser = userService.getUserByMobile(mobile);
-                            if (mobileUser!=null) {
-                                return JsonResponse.error(100002, "手机号码已被其他用户占用，请更换。");
-                            }
-                        }
-                    }
 
-                    userEntity = userService.getUserByUnionId(unionId);
-                    if (userEntity==null || StringUtils.isBlank(mobile)) {
-                        return JsonResponse.error(100001, "手机号码不能为空。");
+                        }
                     }
 
                     ThirdUserVo thirdUserVo = new ThirdUserVo();
@@ -261,7 +256,28 @@ public class LoginController {
                     thirdUserVo.setUserGender(gender);
                     thirdUserVo.setMobile(mobile);
                     thirdUserVo.setEmail(email);
-                    userEntity = userService.saveThirdUser(thirdUserVo);
+
+                    if(StringUtils.isNotBlank(mobile)){
+                        UserEntity mobileUser = userService.getUserByMobile(mobile);
+                        if (mobileUser!=null) {
+                            //直接关联已经存在的用户
+                            userEntity = userService.saveThirdUser(thirdUserVo,mobileUser);
+                        }else{
+                            userEntity = userService.getUserByUnionId(unionId);
+                            if (userEntity==null || StringUtils.isBlank(mobile)) {
+                                return JsonResponse.error(100001, "手机号码不能为空。");
+                            }
+                            userEntity = userService.saveThirdUser(thirdUserVo);
+                        }
+                    }else{
+                        userEntity = userService.getUserByUnionId(unionId);
+                        if (userEntity==null || StringUtils.isBlank(mobile)) {
+                            return JsonResponse.error(100001, "手机号码不能为空。");
+                        }
+                        userEntity = userService.saveThirdUser(thirdUserVo);
+                    }
+
+
                     UsernamePasswordToken token = new UsernamePasswordToken(userEntity.getLoginName(), userEntity.getPassword());
                     subject.login(token);
                 } catch (Exception e) {

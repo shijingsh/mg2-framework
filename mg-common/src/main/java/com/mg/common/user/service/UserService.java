@@ -117,4 +117,6 @@ public interface UserService {
     UserEntity getThirdUser(ThirdUserVo thirdUserVo);
 
     UserEntity saveThirdUser(ThirdUserVo thirdUserVo);
+
+    UserEntity saveThirdUser(ThirdUserVo thirdUserVo,UserEntity userEntity);
 }

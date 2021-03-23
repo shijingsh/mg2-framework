@@ -372,4 +372,39 @@ public class UserServiceImpl implements UserService {
 
         return userEntity;
     }
+
+    @Transactional
+    public UserEntity saveThirdUser(ThirdUserVo thirdUserVo,UserEntity userEntity) {
+
+        //直接关联现有帐户
+        if(StringUtils.isNotBlank(thirdUserVo.getLoginName())){
+            userEntity.setLoginName(thirdUserVo.getLoginName());
+        }
+
+        if(StringUtils.isNotBlank(thirdUserVo.getAppleId())){
+            userEntity.setAppleId(thirdUserVo.getAppleId());
+        }
+        if(StringUtils.isNotBlank(thirdUserVo.getUnionId())){
+            userEntity.setUnionId(thirdUserVo.getUnionId());
+        }
+
+        if(StringUtils.isNotBlank(thirdUserVo.getUserName())){
+            userEntity.setName(thirdUserVo.getUserName());
+        }
+        if(StringUtils.isNotBlank(thirdUserVo.getUserAvatar())){
+            userEntity.setHeadPortrait(thirdUserVo.getUserAvatar());
+        }
+        if(StringUtils.isBlank(userEntity.getPassword())){
+            userEntity.setPassword(MD5.GetMD5Code(UserEntity.DEFAULT_PASSWORD));
+        }
+
+        userEntity.setAccessToken(thirdUserVo.getAccessToken());
+        userEntity.setMobile(thirdUserVo.getMobile());
+        userEntity.setEmail(thirdUserVo.getEmail());
+
+
+        userDao.save(userEntity);
+
+        return userEntity;
+    }
 }

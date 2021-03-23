@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.mg.common.components.SmsService;
 import com.mg.common.entity.UserEntity;
 import com.mg.common.user.service.UserService;
+import com.mg.common.user.vo.RegisterVo;
 import com.mg.common.utils.MD5;
 import com.mg.framework.utils.JsonResponse;
 import com.mg.framework.utils.WebUtil;
@@ -33,26 +34,39 @@ public class RegisterController {
     @RequestMapping("/register")
     public String register() {
         String jsonString = WebUtil.getJsonBody(req);
-        UserEntity userEntity = JSON.parseObject(jsonString, UserEntity.class);
-        if (StringUtils.isBlank(userEntity.getLoginName()) || StringUtils.isBlank(userEntity.getPassword())) {
+        RegisterVo registerVo = JSON.parseObject(jsonString, RegisterVo.class);
+        if (StringUtils.isBlank(registerVo.getLoginName()) || StringUtils.isBlank(registerVo.getPassword())) {
             return JsonResponse.error(100000, "用户名,密码不能为空。");
         }
 
-        UserEntity user = userService.getUser(userEntity.getLoginName());
-        if (user != null) {
-            return JsonResponse.error(100000, "用户已注册");
+        String code = registerVo.getVerifyCode();
+        if(StringUtils.isNotBlank(code)){
+            code = code.trim();
         }
-        if(StringUtils.isBlank(userEntity.getMobile())){
-            userEntity.setMobile(userEntity.getLoginName());
-        }
-        String code = req.getParameter("code").trim();
-        if(smsService.validateCode(userEntity.getMobile(),code)){
-            userEntity.setPassword(MD5.GetMD5Code(userEntity.getPassword()));
-            userService.updateUser(userEntity);
+        String mobile = registerVo.getLoginName();
+        if(smsService.validateCode(mobile,code)){
+            UserEntity user = userService.getUser(mobile);
+            if (user != null) {
+                //直接修改已经存在的账号;
+                user.setLoginName(registerVo.getLoginName());
+                user.setPassword(MD5.GetMD5Code(registerVo.getPassword()));
+                if(StringUtils.isNotBlank(registerVo.getName())){
+                    user.setName(registerVo.getName());
+                }
+
+                return JsonResponse.success(user);
+            }else{
+                UserEntity userEntity = new UserEntity();
+                userEntity.setLoginName(registerVo.getLoginName());
+                userEntity.setName(registerVo.getName());
+                userEntity.setMobile(mobile);
+                userEntity.setPassword(MD5.GetMD5Code(registerVo.getPassword()));
+                userService.updateUser(userEntity);
+
+                return JsonResponse.success(userEntity);
+            }
         }else{
             return JsonResponse.error(100000, "验证码输入错误");
         }
-
-        return JsonResponse.success(userEntity);
     }
 }
