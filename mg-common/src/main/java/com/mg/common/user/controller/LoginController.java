@@ -13,6 +13,7 @@ import com.mg.common.user.vo.ThirdLoginVo;
 import com.mg.common.user.vo.ThirdUserVo;
 import com.mg.common.utils.AESGetPhoneNumber;
 import com.mg.common.utils.HttpClientUtil;
+import com.mg.common.utils.JsonUtils;
 import com.mg.common.utils.MD5;
 import com.mg.framework.log.Constants;
 import com.mg.framework.sys.PropertyConfigurer;
@@ -104,6 +105,8 @@ public class LoginController {
 
         String jsonString = WebUtil.getJsonBody(req);
         ThirdUserVo thirdUserVo = JSON.parseObject(jsonString, ThirdUserVo.class);
+        System.out.println("loginThird登录中：");
+        System.out.println(JsonUtils.toJsonStr(thirdUserVo));
         if (StringUtils.isBlank(thirdUserVo.getLoginName()) || StringUtils.isBlank(thirdUserVo.getAccessToken())) {
             return JsonResponse.error(100000, "没有第三方授权信息。");
         }
@@ -123,9 +126,14 @@ public class LoginController {
         }
         UserEntity userEntity = null;
         try {
+            if (StringUtils.isNotBlank(userEntity.getMobile())) {
+            }
             userEntity = userService.saveOrGetThirdUser(thirdUserVo);
             if (StringUtils.isBlank(userEntity.getMobile())) {
-                return JsonResponse.error(100001, "手机号码不能为空。");
+                UserEntity mobileUser = userService.getUserByMobile(userEntity.getMobile());
+                if (mobileUser!=null) {
+                    return JsonResponse.error(100002, "手机号码已被其他用户占用，请更换。");
+                }
             }
             UsernamePasswordToken token = new UsernamePasswordToken(userEntity.getLoginName(), userEntity.getPassword());
             subject.login(token);
@@ -148,7 +156,8 @@ public class LoginController {
 
         ThirdLoginVo loginVo = WebUtil.getJsonBody(req, ThirdLoginVo.class);
 
-        System.out.println("weixinLogin登录中："+loginVo.getLastLoginPlatform());
+        System.out.println("weixinLogin登录中：");
+        System.out.println(JsonUtils.toJsonStr(loginVo));
         String code = loginVo.getCode();
         String userToken = loginVo.getUserToken();
         String appid = loginVo.getAppid();
@@ -208,6 +217,10 @@ public class LoginController {
                         }
                         if(info!=null && StringUtils.isNotBlank(info.getPhoneNumber())){
                             mobile = info.getPhoneNumber();
+                            UserEntity mobileUser = userService.getUserByMobile(mobile);
+                            if (mobileUser!=null) {
+                                return JsonResponse.error(100002, "手机号码已被其他用户占用，请更换。");
+                            }
                         }
                     }
 
