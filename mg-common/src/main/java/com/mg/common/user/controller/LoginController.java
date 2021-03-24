@@ -243,7 +243,6 @@ public class LoginController {
                         }
                         if(info!=null && StringUtils.isNotBlank(info.getPhoneNumber())){
                             mobile = info.getPhoneNumber();
-
                         }
                     }
 
@@ -264,17 +263,20 @@ public class LoginController {
                             userEntity = userService.saveThirdUser(thirdUserVo,mobileUser);
                         }else{
                             userEntity = userService.getUserByUnionId(unionId);
-                            if (userEntity==null || StringUtils.isBlank(mobile)) {
-                                return JsonResponse.error(100001, "手机号码不能为空。");
+                            //根据unionId找到了，则修改，没有找到则新增用户
+                            if(userEntity!=null){
+                                userEntity = userService.saveThirdUser(thirdUserVo,userEntity);
+                            }else {
+                                userEntity = userService.saveThirdUser(thirdUserVo);
                             }
-                            userEntity = userService.saveThirdUser(thirdUserVo);
                         }
                     }else{
+                        //没有传手机号，并且根据unionId没有找到
                         userEntity = userService.getUserByUnionId(unionId);
                         if (userEntity==null || StringUtils.isBlank(userEntity.getMobile())) {
                             return JsonResponse.error(100001, "手机号码不能为空。");
                         }
-                        userEntity = userService.saveThirdUser(thirdUserVo);
+                        userEntity = userService.saveThirdUser(thirdUserVo,userEntity);
                     }
 
 
