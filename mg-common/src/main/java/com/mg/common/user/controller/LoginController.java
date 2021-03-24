@@ -271,7 +271,7 @@ public class LoginController {
                         }
                     }else{
                         userEntity = userService.getUserByUnionId(unionId);
-                        if (userEntity==null || StringUtils.isBlank(mobile)) {
+                        if (userEntity==null || StringUtils.isBlank(userEntity.getMobile())) {
                             return JsonResponse.error(100001, "手机号码不能为空。");
                         }
                         userEntity = userService.saveThirdUser(thirdUserVo);
