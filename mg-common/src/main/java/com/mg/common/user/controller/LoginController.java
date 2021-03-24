@@ -239,7 +239,7 @@ public class LoginController {
                             return JsonResponse.error(100003, "解密微信手机号发生错误，会话超时。");
                         }else {
                             System.out.println("======================解密微信手机号========================");
-                            System.out.println(info.toString());
+                            System.out.println(JsonUtils.toJsonStr(info));
                         }
                         if(info!=null && StringUtils.isNotBlank(info.getPhoneNumber())){
                             mobile = info.getPhoneNumber();
