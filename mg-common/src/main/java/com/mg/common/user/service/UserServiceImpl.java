@@ -364,8 +364,12 @@ public class UserServiceImpl implements UserService {
         userEntity.setHeadPortrait(thirdUserVo.getUserAvatar());
         userEntity.setPassword(MD5.GetMD5Code(UserEntity.DEFAULT_PASSWORD));
         userEntity.setAccessToken(thirdUserVo.getAccessToken());
-        userEntity.setMobile(thirdUserVo.getMobile());
-        userEntity.setEmail(thirdUserVo.getEmail());
+        if(StringUtils.isNotBlank(thirdUserVo.getMobile())){
+            userEntity.setMobile(thirdUserVo.getMobile());
+        }
+        if(StringUtils.isNotBlank(thirdUserVo.getEmail())){
+            userEntity.setEmail(thirdUserVo.getEmail());
+        }
 
 
         userDao.save(userEntity);
@@ -399,9 +403,12 @@ public class UserServiceImpl implements UserService {
         }
 
         userEntity.setAccessToken(thirdUserVo.getAccessToken());
-        userEntity.setMobile(thirdUserVo.getMobile());
-        userEntity.setEmail(thirdUserVo.getEmail());
-
+        if(StringUtils.isNotBlank(thirdUserVo.getMobile())){
+            userEntity.setMobile(thirdUserVo.getMobile());
+        }
+        if(StringUtils.isNotBlank(thirdUserVo.getEmail())){
+            userEntity.setEmail(thirdUserVo.getEmail());
+        }
 
         userDao.save(userEntity);
 
