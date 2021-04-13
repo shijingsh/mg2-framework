@@ -6,6 +6,7 @@ import com.mg.common.entity.UserEntity;
 import com.mg.common.upload.service.UploadService;
 import com.mg.common.upload.vo.UploadBean;
 import com.mg.common.user.service.UserService;
+import com.mg.common.user.vo.ResetPwdVo;
 import com.mg.common.utils.MD5;
 import com.mg.framework.entity.vo.PageTableVO;
 import com.mg.framework.log.Constants;
@@ -13,11 +14,13 @@ import com.mg.framework.utils.JsonResponse;
 import com.mg.framework.utils.UserHolder;
 import com.mg.framework.utils.WebUtil;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.session.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
@@ -39,13 +42,11 @@ public class UserController {
     @Autowired
     private SmsService smsService;
 
+    @ApiOperation(value = "修改用户信息")
     @ResponseBody
     @RequestMapping("/modify")
-    public String modify() {
+    public String modify(@RequestBody UserEntity user) {
 
-        String jsonString = WebUtil.getJsonBody(req);
-
-        UserEntity user = JSON.parseObject(jsonString, UserEntity.class);
         try {
             userService.updateUser(user);
         } catch (Exception e) {
@@ -133,26 +134,28 @@ public class UserController {
         return JsonResponse.success();
     }
 
+    @ApiOperation(value = "重置密码")
     @ResponseBody
     @RequestMapping("/resetPassword")
-    public String resetPassword() {
+    public String resetPassword(ResetPwdVo resetPwdVo) {
 
-        String jsonString = WebUtil.getJsonBody(req);
-        UserEntity userEntity = JSON.parseObject(jsonString, UserEntity.class);
-        if (StringUtils.isBlank(userEntity.getLoginName()) || StringUtils.isBlank(userEntity.getPassword())) {
+        if (StringUtils.isBlank(resetPwdVo.getLoginName()) || StringUtils.isBlank(resetPwdVo.getPassword())) {
             return JsonResponse.error(100000, "用户名,密码不能为空。");
         }
+        if (StringUtils.isBlank(resetPwdVo.getCode())) {
+            return JsonResponse.error(100000, "验证码不能为空。");
+        }
 
-        UserEntity user = userService.getUser(userEntity.getLoginName());
+        UserEntity user = userService.getUser(resetPwdVo.getLoginName());
         if (user == null) {
             return JsonResponse.error(100000, "用户尚未注册");
         }
         if(StringUtils.isBlank(user.getMobile())){
             user.setMobile(user.getLoginName());
         }
-        String code = req.getParameter("code").trim();
+        String code = resetPwdVo.getCode().trim();
         if(smsService.validateCode(user.getMobile(),code)){
-            user.setPassword(MD5.GetMD5Code(userEntity.getPassword()));
+            user.setPassword(MD5.GetMD5Code(resetPwdVo.getPassword()));
             userService.updateUser(user);
         }else{
             return JsonResponse.error(100000, "验证码输入错误");
@@ -229,6 +232,7 @@ public class UserController {
      * 获取用户
      * @return
      */
+    @ApiOperation(value = "获取用户信息")
     @ResponseBody
     @RequestMapping("/info")
     public String info(HttpServletRequest request) {

@@ -29,6 +29,7 @@ import org.apache.shiro.mgt.RealmSecurityManager;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -67,10 +68,8 @@ public class LoginController {
     @ApiOperation(value = "手机号码登陆")
     @ResponseBody
     @RequestMapping("/login")
-    public String login() {
+    public String login(@RequestBody UserEntity userEntity) {
 
-        String jsonString = WebUtil.getJsonBody(req);
-        UserEntity userEntity = JSON.parseObject(jsonString, UserEntity.class);
         if (StringUtils.isBlank(userEntity.getLoginName()) || StringUtils.isBlank(userEntity.getPassword())) {
             return JsonResponse.error(100000, "用户名,密码不能为空。");
         }
@@ -111,10 +110,8 @@ public class LoginController {
     @ApiOperation(value = "第三方授权登陆")
     @ResponseBody
     @RequestMapping("/loginThird")
-    public String loginThird() {
+    public String loginThird(@RequestBody ThirdUserVo thirdUserVo) {
 
-        String jsonString = WebUtil.getJsonBody(req);
-        ThirdUserVo thirdUserVo = JSON.parseObject(jsonString, ThirdUserVo.class);
         System.out.println("loginThird登录中：");
         System.out.println(JsonUtils.toJsonStr(thirdUserVo));
         if ((StringUtils.isBlank(thirdUserVo.getUnionId()) && StringUtils.isBlank(thirdUserVo.getAppleId()) )
@@ -182,9 +179,7 @@ public class LoginController {
     @ApiOperation(value = "小程序登陆")
     @ResponseBody
     @RequestMapping("/weixinLogin")
-    public String weixinLogin() {
-
-        ThirdLoginVo loginVo = WebUtil.getJsonBody(req, ThirdLoginVo.class);
+    public String weixinLogin(@RequestBody ThirdLoginVo loginVo) {
 
         System.out.println("weixinLogin登录中：");
         System.out.println(JsonUtils.toJsonStr(loginVo));
@@ -333,13 +328,10 @@ public class LoginController {
     @ApiOperation(value = "获取微信Token")
     @ResponseBody
     @RequestMapping("/weixinToken")
-    public String weixinToken() {
-
-        String grant_type = req.getParameter("grant_type");
+    public String weixinToken(String grant_type,String appid,String secret) {
 
         if (StringUtils.isNotBlank(grant_type)){
-            String appid = req.getParameter("appid");
-            String secret = req.getParameter("secret");
+
             if(StringUtils.isBlank(appid)){
                 appid = PropertyConfigurer.getConfig("weixin.appid");
             }

@@ -13,6 +13,7 @@ import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -37,9 +38,7 @@ public class RegisterController {
     @ApiOperation(value = "手机号码注册")
     @ResponseBody
     @RequestMapping("/register")
-    public String register() {
-        String jsonString = WebUtil.getJsonBody(req);
-        RegisterVo registerVo = JSON.parseObject(jsonString, RegisterVo.class);
+    public String register(@RequestBody RegisterVo registerVo) {
         if (StringUtils.isBlank(registerVo.getLoginName()) || StringUtils.isBlank(registerVo.getPassword())) {
             return JsonResponse.error(100000, "用户名,密码不能为空。");
         }
