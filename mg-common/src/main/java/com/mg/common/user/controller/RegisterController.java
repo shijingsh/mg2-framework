@@ -8,6 +8,8 @@ import com.mg.common.user.vo.RegisterVo;
 import com.mg.common.utils.MD5;
 import com.mg.framework.utils.JsonResponse;
 import com.mg.framework.utils.WebUtil;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -20,6 +22,7 @@ import javax.servlet.http.HttpServletRequest;
  * 用户注册
  * Created by kf on 2016/11/11.
  */
+@Api(tags = "用户管理")
 @Controller
 @RequestMapping(value = "/",
         produces = "application/json; charset=UTF-8")
@@ -30,6 +33,8 @@ public class RegisterController {
     private UserService userService;
     @Autowired
     private SmsService smsService;
+
+    @ApiOperation(value = "手机号码注册")
     @ResponseBody
     @RequestMapping("/register")
     public String register() {

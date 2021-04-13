@@ -4,6 +4,8 @@ import com.mg.common.components.SmsService;
 import com.mg.common.entity.SmsCodeEntity;
 import com.mg.common.user.service.SmsCodeService;
 import com.mg.framework.utils.JsonResponse;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -17,6 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.Random;
 
+@Api(tags = "用户管理")
 @Controller
 @RequestMapping(value = "/",
 		produces = "application/json; charset=UTF-8")
@@ -33,6 +36,7 @@ public class SmsCodeController {
 	 * @param mobile
      * @return
      */
+	@ApiOperation(value = "获取验证码")
 	@ResponseBody
     @RequestMapping("verifyCode")
     public String verifyCode(String mobile) {

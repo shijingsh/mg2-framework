@@ -2,6 +2,8 @@ package com.mg.common.upload.controller;
 
 import com.mg.common.utils.excel.DownExcelUtil;
 import com.mg.framework.sys.PropertyConfigurer;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -15,6 +17,7 @@ import java.util.Date;
  * 文件下载接口
  * Created by liukefu on 2015/11/12.
  */
+@Api(tags = "文件上传")
 @Controller
 @RequestMapping(value = "/file",
         produces = "application/json; charset=UTF-8")
@@ -23,6 +26,7 @@ public class DownLoadFileController {
      * 下载
      * @return
      */
+    @ApiOperation(value = "下载文件")
     @RequestMapping(value = "/download")
     public void download(String path,HttpServletResponse response) {
 
@@ -35,6 +39,7 @@ public class DownLoadFileController {
      * @param path
      * @param response
      */
+    @ApiOperation(value = "显示文件")
     @RequestMapping(value="showImg")
     public void showImg(String path,HttpServletResponse response)  {
         String rootPath = ""+ PropertyConfigurer.getContextProperty("temppath");

@@ -5,6 +5,8 @@ import com.mg.common.upload.vo.UploadBase64;
 import com.mg.common.upload.vo.UploadBean;
 import com.mg.framework.utils.JsonResponse;
 import com.mg.framework.utils.WebUtil;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,6 +25,7 @@ import java.util.Map;
  * 上传文件
  * @author liukefu
  */
+@Api(tags = "文件上传")
 @Controller
 @RequestMapping(value = "/",
         produces = "application/json; charset=UTF-8")
@@ -35,6 +38,7 @@ public class UploadController{
      * @param userPath  在temp 下自定义一个目录
      * @return
      */
+    @ApiOperation(value = "上传文件")
     @ResponseBody
     @RequestMapping("/upload")
     public String upload(HttpServletRequest request,String userPath) {
@@ -51,6 +55,7 @@ public class UploadController{
      * @param request
      * @return
      */
+    @ApiOperation(value = "上传文件base64")
     @ResponseBody
     @RequestMapping("/uploadBase64")
     public String uploadBase64(HttpServletRequest request) {
@@ -62,6 +67,7 @@ public class UploadController{
 
     @ResponseBody
     @RequestMapping("/uploadBig")
+    @ApiOperation(value = "上传大文件")
     public String uploadBig(HttpServletRequest request,String userPath,String md5,
                             Long size,
                             Integer chunks,

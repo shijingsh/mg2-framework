@@ -12,6 +12,7 @@ import com.mg.framework.log.Constants;
 import com.mg.framework.utils.JsonResponse;
 import com.mg.framework.utils.UserHolder;
 import com.mg.framework.utils.WebUtil;
+import io.swagger.annotations.Api;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.session.Session;
@@ -24,6 +25,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
+@Api(tags = "用户管理")
 @Controller
 @RequestMapping(value = "/user",
         produces = "application/json; charset=UTF-8")

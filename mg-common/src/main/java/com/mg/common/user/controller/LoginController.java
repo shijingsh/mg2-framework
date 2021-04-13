@@ -20,6 +20,8 @@ import com.mg.framework.sys.PropertyConfigurer;
 import com.mg.framework.utils.WebUtil;
 import com.mg.framework.utils.JsonResponse;
 import com.mg.framework.utils.UserHolder;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.UsernamePasswordToken;
@@ -37,6 +39,7 @@ import java.util.Date;
 /**
  * 用户登录/退出
  */
+@Api(tags = "用户管理")
 @Controller
 @RequestMapping(value = "/",
         produces = "application/json; charset=UTF-8")
@@ -61,6 +64,7 @@ public class LoginController {
         return true;
     }
 
+    @ApiOperation(value = "手机号码登陆")
     @ResponseBody
     @RequestMapping("/login")
     public String login() {
@@ -104,6 +108,7 @@ public class LoginController {
      * apple 授权登陆APP
      * @return
      */
+    @ApiOperation(value = "第三方授权登陆")
     @ResponseBody
     @RequestMapping("/loginThird")
     public String loginThird() {
@@ -174,6 +179,7 @@ public class LoginController {
      * 小程序登陆
      * @return
      */
+    @ApiOperation(value = "小程序登陆")
     @ResponseBody
     @RequestMapping("/weixinLogin")
     public String weixinLogin() {
@@ -315,6 +321,7 @@ public class LoginController {
     /**
      * 退出
      */
+    @ApiOperation(value = "退出登陆")
     @ResponseBody
     @RequestMapping("/loginOut")
     public String loginOut() {
@@ -323,6 +330,7 @@ public class LoginController {
         return JsonResponse.success();
     }
 
+    @ApiOperation(value = "获取微信Token")
     @ResponseBody
     @RequestMapping("/weixinToken")
     public String weixinToken() {
