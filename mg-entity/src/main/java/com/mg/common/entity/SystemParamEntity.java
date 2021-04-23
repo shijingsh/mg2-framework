@@ -18,10 +18,11 @@ public class SystemParamEntity extends BaseEntity {
 
 	private static final long serialVersionUID = 5452580056240686554L;
 
+	private String shopId;
 	/**
 	 * 参数中文名称
 	 */
-	private String paramName;		
+	private String paramName;
 	/**
 	 * 参数值
 	 */
@@ -37,7 +38,15 @@ public class SystemParamEntity extends BaseEntity {
 	 */
 	@Lob
 	private String remark;
-		
+
+	public String getShopId() {
+		return shopId;
+	}
+
+	public void setShopId(String shopId) {
+		this.shopId = shopId;
+	}
+
 	public String getParamName() {
 		return paramName;
 	}
@@ -69,5 +78,5 @@ public class SystemParamEntity extends BaseEntity {
 	public void setRemark(String remark) {
 		this.remark = remark;
 	}
-	
+
 }
