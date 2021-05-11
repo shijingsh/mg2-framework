@@ -4,7 +4,9 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.mg.common.components.SmsService;
 import com.mg.common.entity.InstanceEntity;
+import com.mg.common.entity.SystemParamEntity;
 import com.mg.common.shiro.service.UserRealm;
+import com.mg.common.user.service.SystemParamService;
 import com.mg.common.user.service.UserService;
 import com.mg.common.entity.UserEntity;
 import com.mg.common.instance.service.InstanceService;
@@ -53,6 +55,8 @@ public class LoginController {
     private InstanceService instanceService;
     @Autowired
     private SmsService smsService;
+    @Autowired
+    private SystemParamService systemParamService;
     /**
      * 清理权限缓存
      */
@@ -185,8 +189,7 @@ public class LoginController {
         System.out.println(JsonUtils.toJsonStr(loginVo));
         String code = loginVo.getCode();
         String userToken = loginVo.getUserToken();
-        String appid = loginVo.getAppid();
-        String secret = loginVo.getSecret();
+        String shopId = loginVo.getShopId();
         String nickName = loginVo.getNickName();
         String avatarUrl = loginVo.getAvatarUrl();
         String gender = loginVo.getGender();
@@ -194,14 +197,25 @@ public class LoginController {
         if (StringUtils.isBlank(code)) {
             return JsonResponse.error(100000, "微信code不能为空。");
         }
-
+        String appid = null;
+        String secret = null;
         if (StringUtils.isNotBlank(code)){
-            if(StringUtils.isBlank(appid)){
-                appid = PropertyConfigurer.getConfig("weixin.appid");
+            if(StringUtils.isNotBlank(shopId)){
+                SystemParamEntity param = systemParamService.findByName(shopId,shopId+"_weixin.appid");
+                if(param==null){
+                    appid = PropertyConfigurer.getConfig("weixin.appid");
+                }else{
+                    appid = param.getParamValue();
+                }
+
+                SystemParamEntity paramSecret = systemParamService.findByName(shopId,shopId+"_weixin.secret");
+                if(paramSecret==null){
+                    secret = PropertyConfigurer.getConfig("weixin.secret");
+                }else{
+                    secret = paramSecret.getParamValue();
+                }
             }
-            if(StringUtils.isBlank(secret)) {
-                secret = PropertyConfigurer.getConfig("weixin.secret");
-            }
+
             String url = "https://api.weixin.qq.com/sns/jscode2session?appid="+appid+"&secret="+secret+"&js_code=" + code + "&grant_type=authorization_code";
 
             String json = HttpClientUtil.sendGetRequest(url);

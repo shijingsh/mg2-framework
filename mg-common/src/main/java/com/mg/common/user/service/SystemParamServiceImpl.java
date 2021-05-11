@@ -4,6 +4,7 @@ import com.mg.common.entity.SystemParamEntity;
 import com.mg.common.user.dao.SystemParamDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -14,6 +15,7 @@ public class SystemParamServiceImpl implements SystemParamService {
     @Autowired
     private SystemParamDao systemParamDao;
 
+    @Transactional(readOnly = true)
     public SystemParamEntity findByName(String shopId, String paramName) {
         List<SystemParamEntity> list = systemParamDao.findByShopIdAndParamName(shopId,paramName);
         if(list!=null && list.size()>0){

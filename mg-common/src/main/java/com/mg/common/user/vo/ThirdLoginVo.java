@@ -1,10 +1,11 @@
 package com.mg.common.user.vo;
 
 public class ThirdLoginVo implements java.io.Serializable{
+
+    private String shopId;
+
     private String code;
     private String userToken;
-    private String appid;
-    private String secret;
     private String nickName;
     private String avatarUrl;
     private String gender;
@@ -16,6 +17,14 @@ public class ThirdLoginVo implements java.io.Serializable{
      */
     private String encryptedData;
     private String iv;
+
+    public String getShopId() {
+        return shopId;
+    }
+
+    public void setShopId(String shopId) {
+        this.shopId = shopId;
+    }
 
     public String getEmail() {
         return email;
@@ -39,22 +48,6 @@ public class ThirdLoginVo implements java.io.Serializable{
 
     public void setUserToken(String userToken) {
         this.userToken = userToken;
-    }
-
-    public String getAppid() {
-        return appid;
-    }
-
-    public void setAppid(String appid) {
-        this.appid = appid;
-    }
-
-    public String getSecret() {
-        return secret;
-    }
-
-    public void setSecret(String secret) {
-        this.secret = secret;
     }
 
     public String getNickName() {

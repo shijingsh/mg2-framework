@@ -30,9 +30,10 @@ public class SystemParamEntity extends BaseEntity {
 	private String paramValue;
 
 	/**
+	 * 1 有效 0 无效
 	 * 有效状态标识
 	 */
-	private Integer status;
+	private Integer status = 1;
 	/**
 	 * 参数说明
 	 */
