@@ -20,7 +20,7 @@ import java.util.Date;
 
 @Api("微信支付")
 @RestController
-@RequestMapping("/pay")
+@RequestMapping("/wxPay")
 
 public class WxPayController {
   private WxPayService wxService = WxPayUtils.getWxPayService();
