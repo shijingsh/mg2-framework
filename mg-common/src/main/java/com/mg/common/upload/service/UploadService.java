@@ -5,6 +5,7 @@ import com.mg.common.upload.vo.UploadBean;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -28,4 +29,6 @@ public interface UploadService {
                                 Integer chunks,
                                 Integer chunk,
                                 MultipartFile file) throws IOException;
+
+    File getTargetFile(UploadBean uploadBean);
 }

@@ -3,22 +3,36 @@ package com.mg.common.user.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.mg.common.entity.SystemParamEntity;
+import com.mg.common.upload.service.UploadService;
+import com.mg.common.upload.vo.UploadBean;
+import com.mg.common.user.service.SystemParamService;
+import com.mg.common.user.vo.QrCodeVo;
 import com.mg.common.utils.HttpClientUtil;
 import com.mg.framework.sys.PropertyConfigurer;
 import com.mg.framework.utils.JsonResponse;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+@Api(tags = "微信接口")
 @Controller
 @RequestMapping(value = "/wechat",
         produces = "application/json; charset=UTF-8")
@@ -26,6 +40,10 @@ public class WechatController {
 
     @Autowired
     private HttpServletRequest req;
+    @Autowired
+    private SystemParamService systemParamService;
+    @Autowired
+    private UploadService uploadService;
 
     private  String getTicket(String access_token) {
 
@@ -66,6 +84,7 @@ public class WechatController {
         return "";
     }
 
+    @ApiOperation("微信网页分享")
     @ResponseBody
     @RequestMapping("/config")
     public String config() {
@@ -114,4 +133,116 @@ public class WechatController {
 
         return JsonResponse.success(map, null);
     }
+
+    @ApiOperation("微信小程序：获取当期页面的分享二维码")
+    @ResponseBody
+    @RequestMapping("/miniQrCodeByPage")
+    public String miniQrCodeByPage(@RequestBody QrCodeVo qrCodeVo) {
+
+        String appid = "";
+        String secret = "";
+        String shopId = qrCodeVo.getShopId();
+        String grant_type = "client_credential";
+        if(StringUtils.isNotBlank(shopId)){
+            SystemParamEntity param = systemParamService.findByName(shopId,shopId+"_weixin.appid");
+            if(param==null){
+                appid = PropertyConfigurer.getConfig("weixin.appid");
+            }else{
+                appid = param.getParamValue();
+            }
+
+            SystemParamEntity paramSecret = systemParamService.findByName(shopId,shopId+"_weixin.secret");
+            if(paramSecret==null){
+                secret = PropertyConfigurer.getConfig("weixin.secret");
+            }else{
+                secret = paramSecret.getParamValue();
+            }
+        }
+
+        try{
+
+            String url = "https://api.weixin.qq.com/cgi-bin/token?grant_type="+grant_type+"&appid="+appid+"&secret="+secret;
+
+            String json = HttpClientUtil.sendGetRequest(url);
+            //获取AccessToken
+            String accessToken = "";
+            JSONObject jsonObject = JSON.parseObject(json);
+            String errcode = jsonObject.getString("errcode");
+            if (StringUtils.isBlank(errcode)) {
+                accessToken = jsonObject.getString("access_token");
+            }
+
+            //保存文件到服务器
+            UploadBean uploadBean = new UploadBean();
+            uploadBean.setUserPath("miniQrCode");
+            File file = uploadService.getTargetFile(uploadBean);
+
+            String str = String.valueOf(Math.round(Math.random() * 1000000));
+            String name = new StringBuilder("mg").append(new Date().getTime()).append(str).append(".png").toString();
+
+            StringBuffer sb = new StringBuffer(file.getPath()).append('/').append(name);
+
+
+            String page = qrCodeVo.getPage();
+            String params = qrCodeVo.getParams();
+            String path = sb.toString();
+
+            downloadMiniQrCode(page,path, params,accessToken);
+
+            return JsonResponse.success(path,null);
+        }catch (Exception ex){
+            ex.printStackTrace();
+        }
+
+
+        return JsonResponse.error(1000, null);
+    }
+
+    public File downloadMiniQrCode(String path, String filePath, String params, String accessToken) {
+        try{
+
+            URL url = new URL("https://api.weixin.qq.com/wxa/getwxacodeunlimit?access_token="+accessToken);
+            HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+            httpURLConnection.setConnectTimeout(10000);     // 连接超时 单位毫秒
+            httpURLConnection.setReadTimeout(2000);         // 读取超时 单位毫秒
+            // 发送POST请求必须设置如下两行
+            httpURLConnection.setDoOutput(true);            // 打开写入属性
+            httpURLConnection.setDoInput(true);             // 打开读取属性
+            httpURLConnection.setRequestMethod("POST");     // 提交方式
+            httpURLConnection.setRequestProperty("Content-Type", "application/x-javascript; charset=UTF-8");   // TODO 不得不说一下这个提交方式转换！！真的坑。。改了好长时间！！一定要记得加响应头
+            PrintWriter printWriter = new PrintWriter(httpURLConnection.getOutputStream()); // 获取URLConnection对象对应的输出流
+            // 发送请求参数
+            JSONObject paramJson = new JSONObject();
+            paramJson.put("scene", params);    // 你要放的内容
+            paramJson.put("page", path);              // 跳转小程序地址
+            paramJson.put("width", 430);        // 宽度
+            paramJson.put("auto_color", true);
+            paramJson.put("is_hyaline", true);
+
+
+            printWriter.write(paramJson.toString());
+            // flush输出流的缓冲
+            printWriter.flush();
+            BufferedInputStream bis = new BufferedInputStream(httpURLConnection.getInputStream());
+            //创建一个空文件
+            File file = new File(filePath);
+            if(!file.exists()&&!file.createNewFile()){
+                return null;
+            }
+            OutputStream os = new FileOutputStream(file);
+            int len;
+            byte[] arr = new byte[1024];
+            while ((len = bis.read(arr)) != -1) {
+                os.write(arr, 0, len);
+                os.flush();
+            }
+            os.close();
+            return file;
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
 }
