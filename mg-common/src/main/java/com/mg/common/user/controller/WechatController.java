@@ -14,6 +14,8 @@ import com.mg.framework.utils.JsonResponse;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,7 +28,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -38,6 +39,7 @@ import java.util.UUID;
         produces = "application/json; charset=UTF-8")
 public class WechatController {
 
+    private static Logger logger = LoggerFactory.getLogger(WechatController.class);
     @Autowired
     private HttpServletRequest req;
     @Autowired
@@ -182,14 +184,16 @@ public class WechatController {
 
             StringBuffer sb = new StringBuffer(file.getPath()).append('/').append(name);
 
-
             String page = qrCodeVo.getPage();
             String params = qrCodeVo.getParams();
             String path = sb.toString();
 
             downloadMiniQrCode(page,path, params,accessToken);
-
-            return JsonResponse.success(path,null);
+            logger.info("page："+page);
+            logger.info("params："+params);
+            logger.info("relativePath："+uploadBean.getRelativePath()+name);
+            logger.info("file path : {}", path);
+            return JsonResponse.success(uploadBean.getRelativePath()+name,null);
         }catch (Exception ex){
             ex.printStackTrace();
         }
@@ -199,6 +203,7 @@ public class WechatController {
     }
 
     public File downloadMiniQrCode(String path, String filePath, String params, String accessToken) {
+        OutputStream os = null;
         try{
 
             URL url = new URL("https://api.weixin.qq.com/wxa/getwxacodeunlimit?access_token="+accessToken);
@@ -226,20 +231,29 @@ public class WechatController {
             BufferedInputStream bis = new BufferedInputStream(httpURLConnection.getInputStream());
             //创建一个空文件
             File file = new File(filePath);
-            if(!file.exists()&&!file.createNewFile()){
-                return null;
-            }
-            OutputStream os = new FileOutputStream(file);
+            file.setReadable(true,false);
+            file.setWritable(true,false);
+            file.setExecutable(true,false);
+
+            os =  new FileOutputStream(file);
             int len;
             byte[] arr = new byte[1024];
             while ((len = bis.read(arr)) != -1) {
                 os.write(arr, 0, len);
                 os.flush();
             }
-            os.close();
+
             return file;
         }catch (Exception e){
             e.printStackTrace();
+        }finally {
+            if (os!=null){
+                try {
+                    os.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
         return null;
     }
