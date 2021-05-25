@@ -2,8 +2,7 @@
     spring + hibernate
 
 
-  ### generator db sql
-  
-  find the class "com.mg.common.tools.HibernateDDLGenerator"
+### todo
 
-  debug or running the main method,The SQL statement will be entered at the console
+-jwt 集成
+-ssh架构转 spring boot
