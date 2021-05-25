@@ -9,8 +9,8 @@ import com.mg.common.upload.vo.UploadBean;
 import com.mg.common.user.service.SystemParamService;
 import com.mg.common.user.vo.QrCodeVo;
 import com.mg.common.utils.HttpClientUtil;
+import com.mg.framework.log.CommonResult;
 import com.mg.framework.sys.PropertyConfigurer;
-import com.mg.framework.utils.JsonResponse;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
@@ -89,7 +89,7 @@ public class WechatController {
     @ApiOperation("微信网页分享")
     @ResponseBody
     @RequestMapping("/config")
-    public String config() {
+    public CommonResult config() {
         String grant_type = req.getParameter("grant_type");
         String appid = req.getParameter("appid");
         String secret = req.getParameter("secret");
@@ -133,13 +133,13 @@ public class WechatController {
         map.put("nonceStr",nonceStr);
         map.put("signature",signature);
 
-        return JsonResponse.success(map, null);
+        return CommonResult.success(map);
     }
 
     @ApiOperation("微信小程序：获取当期页面的分享二维码")
     @ResponseBody
     @RequestMapping("/miniQrCodeByPage")
-    public String miniQrCodeByPage(@RequestBody QrCodeVo qrCodeVo) {
+    public CommonResult<String> miniQrCodeByPage(@RequestBody QrCodeVo qrCodeVo) {
 
         String appid = "";
         String secret = "";
@@ -193,13 +193,13 @@ public class WechatController {
             logger.info("params："+params);
             logger.info("relativePath："+uploadBean.getRelativePath()+name);
             logger.info("file path : {}", path);
-            return JsonResponse.success(uploadBean.getRelativePath()+name,null);
+            return CommonResult.success(uploadBean.getRelativePath()+name);
         }catch (Exception ex){
             ex.printStackTrace();
         }
 
 
-        return JsonResponse.error(1000, null);
+        return CommonResult.error(1000, null);
     }
 
     public File downloadMiniQrCode(String path, String filePath, String params, String accessToken) {

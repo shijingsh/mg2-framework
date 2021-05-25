@@ -9,8 +9,9 @@ import com.mg.common.user.service.UserService;
 import com.mg.common.user.vo.ResetPwdVo;
 import com.mg.common.utils.MD5;
 import com.mg.framework.entity.vo.PageTableVO;
+import com.mg.framework.log.CommonResult;
 import com.mg.framework.log.Constants;
-import com.mg.framework.utils.JsonResponse;
+
 import com.mg.framework.utils.UserHolder;
 import com.mg.framework.utils.WebUtil;
 import io.swagger.annotations.Api;
@@ -45,51 +46,51 @@ public class UserController {
     @ApiOperation(value = "修改用户信息")
     @ResponseBody
     @RequestMapping("/modify")
-    public String modify(@RequestBody UserEntity user) {
+    public CommonResult<UserEntity> modify(@RequestBody UserEntity user) {
 
         try {
             userService.updateUser(user);
         } catch (Exception e) {
-            return JsonResponse.error(10000, "修改员工信息出现异常");
+            return CommonResult.error(10000, "修改员工信息出现异常");
         }
 
-        return JsonResponse.success(user);
+        return CommonResult.success(user);
     }
 
     @ResponseBody
     @RequestMapping("/modifyPass")
-    public String modifyPass() {
+    public CommonResult<UserEntity> modifyPass() {
 
         String pswOld = req.getParameter("oldPassword");
         String psw = req.getParameter("newPassword");
         String pswConfirm = req.getParameter("confirmPassword");
         if (StringUtils.isBlank(psw)) {
-            return JsonResponse.error(1, "请输入登录密码");
+            return CommonResult.error(1, "请输入登录密码");
         }
         if (psw.length() < 6) {
-            return JsonResponse.error(1, "密码长度不能少于6位！");
+            return CommonResult.error(1, "密码长度不能少于6位！");
         }
         String userId = UserHolder.getLoginUserId();
         if (StringUtils.isBlank(userId)) {
-            return JsonResponse.error(1, "登录超时，请重新登录！");
+            return CommonResult.error(1, "登录超时，请重新登录！");
         }
         UserEntity userEntity = userService.getUserById(userId);
         //String oldPassMd5 = MD5.GetMD5Code(pswOld);
         if (!StringUtils.equals(pswOld, userEntity.getPassword())) {
-            return JsonResponse.error(1, "原密码不正确，请重新输入");
+            return CommonResult.error(1, "原密码不正确，请重新输入");
         }
         if (!StringUtils.equals(psw, pswConfirm)) {
-            return JsonResponse.error(1, "两次密码输入不一致，请重新输入");
+            return CommonResult.error(1, "两次密码输入不一致，请重新输入");
         }
         userEntity.setPassword(MD5.GetMD5Code(psw));
         try {
             userService.updateUser(userEntity);
         } catch (Exception e) {
-            return JsonResponse.error(10000, "修改密码失败！");
+            return CommonResult.error(10000, "修改密码失败！");
         }
         Session session = SecurityUtils.getSubject().getSession();
         session.setAttribute(Constants.CURRENT_USER, userEntity);
-        return JsonResponse.success(userEntity);
+        return CommonResult.success(userEntity);
     }
 
     /**
@@ -99,56 +100,56 @@ public class UserController {
      */
     @ResponseBody
     @RequestMapping("/modifyPassFirst")
-    public String modifyPassFirst() {
+    public CommonResult modifyPassFirst() {
 
         String psw = req.getParameter("newPassword");
         String pswConfirm = req.getParameter("confirmPassword");
         UserEntity userSession = UserHolder.getLoginUser();
         if (userSession.getLastLoginDate() != null) {
-            return JsonResponse.error(1, "非法访问");
+            return CommonResult.error(1, "非法访问");
         }
         if (StringUtils.isBlank(psw)) {
-            return JsonResponse.error(1, "请输入登录密码");
+            return CommonResult.error(1, "请输入登录密码");
         }
 
         if (psw.length() < 6) {
-            return JsonResponse.error(1, "密码长度不能少于6位！");
+            return CommonResult.error(1, "密码长度不能少于6位！");
         }
         String userId = UserHolder.getLoginUserId();
         if (StringUtils.isBlank(userId)) {
-            return JsonResponse.error(1, "登录超时，请重新登录！");
+            return CommonResult.error(1, "登录超时，请重新登录！");
         }
         UserEntity userEntity = userService.getUserById(userId);
 
         if (!StringUtils.equals(psw, pswConfirm)) {
-            return JsonResponse.error(1, "两次密码输入不一致，请重新输入");
+            return CommonResult.error(1, "两次密码输入不一致，请重新输入");
         }
         userEntity.setPassword(MD5.GetMD5Code(psw));
         try {
             userService.updateUser(userEntity);
         } catch (Exception e) {
-            return JsonResponse.error(10000, "修改密码失败！");
+            return CommonResult.error(10000, "修改密码失败！");
         }
         Session session = SecurityUtils.getSubject().getSession();
         session.setAttribute(Constants.CURRENT_USER, userEntity);
-        return JsonResponse.success();
+        return CommonResult.success();
     }
 
     @ApiOperation(value = "重置密码")
     @ResponseBody
     @RequestMapping("/resetPassword")
-    public String resetPassword(ResetPwdVo resetPwdVo) {
+    public CommonResult<UserEntity> resetPassword(ResetPwdVo resetPwdVo) {
 
         if (StringUtils.isBlank(resetPwdVo.getLoginName()) || StringUtils.isBlank(resetPwdVo.getPassword())) {
-            return JsonResponse.error(100000, "用户名,密码不能为空。");
+            return CommonResult.error(100000, "用户名,密码不能为空。");
         }
         if (StringUtils.isBlank(resetPwdVo.getCode())) {
-            return JsonResponse.error(100000, "验证码不能为空。");
+            return CommonResult.error(100000, "验证码不能为空。");
         }
 
         UserEntity user = userService.getUser(resetPwdVo.getLoginName());
         if (user == null) {
-            return JsonResponse.error(100000, "用户尚未注册");
+            return CommonResult.error(100000, "用户尚未注册");
         }
         if(StringUtils.isBlank(user.getMobile())){
             user.setMobile(user.getLoginName());
@@ -158,9 +159,9 @@ public class UserController {
             user.setPassword(MD5.GetMD5Code(resetPwdVo.getPassword()));
             userService.updateUser(user);
         }else{
-            return JsonResponse.error(100000, "验证码输入错误");
+            return CommonResult.error(100000, "验证码输入错误");
         }
-        return JsonResponse.success(user);
+        return CommonResult.success(user);
     }
 
     /**
@@ -170,13 +171,13 @@ public class UserController {
      */
     @ResponseBody
     @RequestMapping("/pageList")
-    public String getPageList() {
+    public CommonResult getPageList() {
         String jsonString = WebUtil.getJsonBody(req);
         PageTableVO param = JSON.parseObject(jsonString, PageTableVO.class);
 
         PageTableVO vo = userService.findPageList(param);
 
-        return JsonResponse.success(vo, null);
+        return CommonResult.success(vo);
     }
 
     /**
@@ -186,11 +187,11 @@ public class UserController {
      */
     @ResponseBody
     @RequestMapping("/initPassWord")
-    public String initPassWord(String id) {
+    public CommonResult initPassWord(String id) {
 
         userService.saveInitUserPassWord(id);
 
-        return JsonResponse.success(null, null);
+        return CommonResult.success(null);
     }
 
     /**
@@ -200,16 +201,17 @@ public class UserController {
      */
     @ResponseBody
     @RequestMapping("/delete")
-    public String delete(String id) {
+    public CommonResult delete(String id) {
 
         userService.delete(id);
 
-        return JsonResponse.success(null, null);
+        return CommonResult.success(null);
     }
 
+    @ApiOperation(value = "上传用户头像")
     @ResponseBody
     @RequestMapping("/headPortrait")
-    public String headPortrait(HttpServletRequest request,String userPath) {
+    public CommonResult<UserEntity> headPortrait(HttpServletRequest request,String userPath) {
 
         MultipartHttpServletRequest mulRequest = (MultipartHttpServletRequest) (request);
 
@@ -225,7 +227,7 @@ public class UserController {
             userService.updateUser(userEntity);
         }
 
-        return JsonResponse.success(userEntity, null);
+        return CommonResult.success(userEntity);
     }
 
     /**
@@ -235,10 +237,10 @@ public class UserController {
     @ApiOperation(value = "获取用户信息")
     @ResponseBody
     @RequestMapping("/info")
-    public String info(HttpServletRequest request) {
+    public CommonResult<UserEntity> info(HttpServletRequest request) {
         UserEntity userEntity = userService.getUserByRequest(request);
 
-        return JsonResponse.success(userEntity, null);
+        return CommonResult.success(userEntity);
     }
 
     /**
@@ -247,9 +249,9 @@ public class UserController {
      */
     @ResponseBody
     @RequestMapping("/get")
-    public String get(String id) {
+    public CommonResult<UserEntity> get(String id) {
         UserEntity userEntity = userService.getUserById(id);
 
-        return JsonResponse.success(userEntity, null);
+        return CommonResult.success(userEntity);
     }
 }

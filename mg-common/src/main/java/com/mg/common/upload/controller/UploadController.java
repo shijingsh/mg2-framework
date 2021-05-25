@@ -3,7 +3,8 @@ package com.mg.common.upload.controller;
 import com.mg.common.upload.service.UploadService;
 import com.mg.common.upload.vo.UploadBase64;
 import com.mg.common.upload.vo.UploadBean;
-import com.mg.framework.utils.JsonResponse;
+
+import com.mg.framework.log.CommonResult;
 import com.mg.framework.utils.WebUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -42,13 +43,13 @@ public class UploadController{
     @ApiOperation(value = "上传文件")
     @ResponseBody
     @RequestMapping("/upload")
-    public String upload(HttpServletRequest request,String userPath) {
+    public CommonResult<List<UploadBean>> upload(HttpServletRequest request,String userPath) {
 
         MultipartHttpServletRequest mulRequest = (MultipartHttpServletRequest) (request);
 
         List<UploadBean> list = uploadService.upload(mulRequest,userPath);
 
-        return JsonResponse.success(list, null);
+        return CommonResult.success(list);
     }
 
     /**
@@ -59,16 +60,16 @@ public class UploadController{
     @ApiOperation(value = "上传文件base64")
     @ResponseBody
     @RequestMapping("/uploadBase64")
-    public String uploadBase64(@RequestBody UploadBase64 uploadBase64) {
+    public CommonResult<List<UploadBean>> uploadBase64(@RequestBody UploadBase64 uploadBase64) {
         List<UploadBean> list = uploadService.uploadBase64(uploadBase64);
 
-        return JsonResponse.success(list, null);
+        return CommonResult.success(list);
     }
 
     @ResponseBody
     @RequestMapping("/uploadBig")
     @ApiOperation(value = "上传大文件")
-    public String uploadBig(HttpServletRequest request,String userPath,String md5,
+    public CommonResult uploadBig(HttpServletRequest request,String userPath,String md5,
                             Long size,
                             Integer chunks,
                             Integer chunk) {
@@ -95,6 +96,6 @@ public class UploadController{
             }
         }
 
-        return JsonResponse.success(uploadBean, null);
+        return CommonResult.success(uploadBean);
     }
 }

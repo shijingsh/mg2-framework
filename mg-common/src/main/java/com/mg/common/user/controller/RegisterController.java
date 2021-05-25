@@ -1,13 +1,11 @@
 package com.mg.common.user.controller;
 
-import com.alibaba.fastjson.JSON;
 import com.mg.common.components.SmsService;
 import com.mg.common.entity.UserEntity;
 import com.mg.common.user.service.UserService;
 import com.mg.common.user.vo.RegisterVo;
 import com.mg.common.utils.MD5;
-import com.mg.framework.utils.JsonResponse;
-import com.mg.framework.utils.WebUtil;
+import com.mg.framework.log.CommonResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
@@ -38,9 +36,9 @@ public class RegisterController {
     @ApiOperation(value = "手机号码注册")
     @ResponseBody
     @RequestMapping("/register")
-    public String register(@RequestBody RegisterVo registerVo) {
+    public CommonResult<UserEntity> register(@RequestBody RegisterVo registerVo) {
         if (StringUtils.isBlank(registerVo.getLoginName()) || StringUtils.isBlank(registerVo.getPassword())) {
-            return JsonResponse.error(100000, "用户名,密码不能为空。");
+            return CommonResult.error(100000, "用户名,密码不能为空。");
         }
 
         String code = registerVo.getVerifyCode();
@@ -58,7 +56,7 @@ public class RegisterController {
                     user.setName(registerVo.getName());
                 }
                 userService.updateUser(user);
-                return JsonResponse.success(user);
+                return CommonResult.success(user);
             }else{
                 UserEntity userEntity = new UserEntity();
                 userEntity.setLoginName(registerVo.getLoginName());
@@ -67,10 +65,10 @@ public class RegisterController {
                 userEntity.setPassword(MD5.GetMD5Code(registerVo.getPassword()));
                 userService.updateUser(userEntity);
 
-                return JsonResponse.success(userEntity);
+                return CommonResult.success(userEntity);
             }
         }else{
-            return JsonResponse.error(100000, "验证码输入错误");
+            return CommonResult.error(100000, "验证码输入错误");
         }
     }
 }

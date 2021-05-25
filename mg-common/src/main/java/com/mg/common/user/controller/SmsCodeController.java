@@ -3,7 +3,8 @@ package com.mg.common.user.controller;
 import com.mg.common.components.SmsService;
 import com.mg.common.entity.SmsCodeEntity;
 import com.mg.common.user.service.SmsCodeService;
-import com.mg.framework.utils.JsonResponse;
+
+import com.mg.framework.log.CommonResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
@@ -39,12 +40,12 @@ public class SmsCodeController {
 	@ApiOperation(value = "获取验证码")
 	@ResponseBody
     @RequestMapping("verifyCode")
-    public String verifyCode(String mobile) {
+    public CommonResult verifyCode(String mobile) {
     	if(StringUtils.isBlank(mobile)) {
-			return JsonResponse.error(100000, "请输入手机号码");
+			return CommonResult.error(100000, "请输入手机号码");
     	}
     	if(mobile.length()!=11) {
-			return JsonResponse.error(100000, "电话号码长度应为11位");
+			return CommonResult.error(100000, "电话号码长度应为11位");
     	}
     	try {
         	//发送短信验证码并保存验证码数据
@@ -63,12 +64,12 @@ public class SmsCodeController {
 			smsCodeService.save(smsCodeEntity);
     	} catch (ServiceException e) {
     		e.printStackTrace();
-			return JsonResponse.error(100000, e.getMessage());
+			return CommonResult.error(100000, e.getMessage());
     	} catch (Exception e) {
     		e.printStackTrace();
-			return JsonResponse.error(100000, "发送失败，请稍后重试！");
+			return CommonResult.error(100000, "发送失败，请稍后重试！");
     	}
-		return JsonResponse.success();
+		return CommonResult.success();
     }
 
 	private static String getRandomStr() {

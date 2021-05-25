@@ -2,10 +2,11 @@ package com.mg.common.instance.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.mg.common.entity.InstanceEntity;
+import com.mg.framework.log.CommonResult;
 import com.mg.framework.utils.WebUtil;
 import com.mg.common.instance.service.InstanceService;
 import com.mg.framework.entity.vo.PageTableVO;
-import com.mg.framework.utils.JsonResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,10 +31,10 @@ public class InstanceController {
      */
     @ResponseBody
     @RequestMapping("/all")
-    public String all() {
+    public CommonResult all() {
         List<InstanceEntity> list = instanceService.findInstanceAll();
 
-        return JsonResponse.success(list, null);
+        return CommonResult.success(list);
     }
 
     /**
@@ -42,10 +43,10 @@ public class InstanceController {
      */
     @ResponseBody
     @RequestMapping("/get")
-    public String get(String id) {
+    public CommonResult get(String id) {
         InstanceEntity instanceEntity = instanceService.findInstanceById(id);
 
-        return JsonResponse.success(instanceEntity, null);
+        return CommonResult.success(instanceEntity);
     }
 
     /**
@@ -54,11 +55,11 @@ public class InstanceController {
      */
     @ResponseBody
     @RequestMapping("/post")
-    public String post(HttpServletRequest req) {
+    public CommonResult post(HttpServletRequest req) {
         String jsonString = WebUtil.getJsonBody(req);
         InstanceEntity instanceEntity =  JSON.parseObject(jsonString, InstanceEntity.class);
         instanceService.save(instanceEntity);
-        return JsonResponse.success(instanceEntity, null);
+        return CommonResult.success(instanceEntity);
     }
     /**
      * 参数列表分页模式
@@ -67,13 +68,13 @@ public class InstanceController {
      */
     @ResponseBody
     @RequestMapping("/listPage")
-    public String listPage(HttpServletRequest req) {
+    public CommonResult listPage(HttpServletRequest req) {
         String jsonString = WebUtil.getJsonBody(req);
         PageTableVO  param =  JSON.parseObject(jsonString, PageTableVO.class);
 
         PageTableVO vo = instanceService.findPageList(param.getPageNo(), param.getPageSize());
 
-        return JsonResponse.success(vo, null);
+        return CommonResult.success(vo);
     }
 
 

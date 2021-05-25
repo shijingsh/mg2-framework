@@ -5,11 +5,11 @@ import com.alibaba.fastjson.JSONObject;
 import com.mg.common.components.SmsService;
 import com.mg.common.entity.InstanceEntity;
 import com.mg.common.entity.SystemParamEntity;
+import com.mg.common.entity.UserEntity;
+import com.mg.common.instance.service.InstanceService;
 import com.mg.common.shiro.service.UserRealm;
 import com.mg.common.user.service.SystemParamService;
 import com.mg.common.user.service.UserService;
-import com.mg.common.entity.UserEntity;
-import com.mg.common.instance.service.InstanceService;
 import com.mg.common.user.vo.PhoneDecryptInfo;
 import com.mg.common.user.vo.ThirdLoginVo;
 import com.mg.common.user.vo.ThirdUserVo;
@@ -17,11 +17,10 @@ import com.mg.common.utils.AESGetPhoneNumber;
 import com.mg.common.utils.HttpClientUtil;
 import com.mg.common.utils.JsonUtils;
 import com.mg.common.utils.MD5;
+import com.mg.framework.log.CommonResult;
 import com.mg.framework.log.Constants;
 import com.mg.framework.sys.PropertyConfigurer;
 import com.mg.framework.utils.WebUtil;
-import com.mg.framework.utils.JsonResponse;
-import com.mg.framework.utils.UserHolder;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
@@ -33,7 +32,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
@@ -72,10 +70,10 @@ public class LoginController {
     @ApiOperation(value = "手机号码登陆")
     @ResponseBody
     @RequestMapping("/login")
-    public String login(@RequestBody UserEntity userEntity) {
+    public CommonResult<UserEntity> login(@RequestBody UserEntity userEntity) {
 
         if (StringUtils.isBlank(userEntity.getLoginName()) || StringUtils.isBlank(userEntity.getPassword())) {
-            return JsonResponse.error(100000, "用户名,密码不能为空。");
+            return CommonResult.error(100000, "用户名,密码不能为空。");
         }
 
         Subject subject = SecurityUtils.getSubject();
@@ -95,7 +93,7 @@ public class LoginController {
             subject.login(token);
         } catch (Exception e) {
             e.printStackTrace();
-            return JsonResponse.error(100000, e.getMessage());
+            return CommonResult.error(100000, e.getMessage());
         }
         UserEntity user = userService.getUser(userEntity.getLoginName());
         if(user!=null){
@@ -103,7 +101,7 @@ public class LoginController {
             userService.updateUserLastLoginDate(user);
         }
 
-        return JsonResponse.success(user, null);
+        return CommonResult.success(user);
     }
 
     /**
@@ -114,13 +112,13 @@ public class LoginController {
     @ApiOperation(value = "第三方授权登陆")
     @ResponseBody
     @RequestMapping("/loginThird")
-    public String loginThird(@RequestBody ThirdUserVo thirdUserVo) {
+    public CommonResult<UserEntity> loginThird(@RequestBody ThirdUserVo thirdUserVo) {
 
         System.out.println("loginThird登录中：");
         System.out.println(JsonUtils.toJsonStr(thirdUserVo));
         if ((StringUtils.isBlank(thirdUserVo.getUnionId()) && StringUtils.isBlank(thirdUserVo.getAppleId()) )
                 || StringUtils.isBlank(thirdUserVo.getAccessToken())) {
-            return JsonResponse.error(100000, "没有第三方授权信息。");
+            return CommonResult.error(100000, "没有第三方授权信息。");
         }
 
         Subject subject = SecurityUtils.getSubject();
@@ -142,7 +140,7 @@ public class LoginController {
 
                 String code = thirdUserVo.getVerifyCode();
                 if (StringUtils.isBlank(code)) {
-                    return JsonResponse.error(100002, "验证码不能为空。");
+                    return CommonResult.error(100002, "验证码不能为空。");
                 }
                 if(smsService.validateCode(thirdUserVo.getMobile(),code)){
                     if (mobileUser!=null) {
@@ -152,12 +150,12 @@ public class LoginController {
                         userEntity = userService.saveThirdUser(thirdUserVo);
                     }
                 }else{
-                    return JsonResponse.error(100002, "验证码输入错误");
+                    return CommonResult.error(100002, "验证码输入错误");
                 }
             }else {
                 userEntity = userService.getThirdUser(thirdUserVo);
                 if(userEntity==null || StringUtils.isBlank(userEntity.getMobile())){
-                    return JsonResponse.error(100001, "手机号码不能为空。");
+                    return CommonResult.error(100001, "手机号码不能为空。");
                 }
             }
 
@@ -165,14 +163,14 @@ public class LoginController {
             subject.login(token);
         } catch (Exception e) {
             e.printStackTrace();
-            return JsonResponse.error(100000, e.getMessage());
+            return CommonResult.error(100000, e.getMessage());
         }
         if(userEntity!=null){
             userEntity.setLastLoginPlatform(thirdUserVo.getLastLoginPlatform());
             userService.updateUserLastLoginDate(userEntity);
         }
 
-        return JsonResponse.success(userEntity, null);
+        return CommonResult.success(userEntity);
     }
 
 
@@ -183,7 +181,7 @@ public class LoginController {
     @ApiOperation(value = "小程序登陆")
     @ResponseBody
     @RequestMapping("/weixinLogin")
-    public String weixinLogin(@RequestBody ThirdLoginVo loginVo) {
+    public CommonResult<UserEntity> weixinLogin(@RequestBody ThirdLoginVo loginVo) {
 
         System.out.println("weixinLogin登录中：");
         System.out.println(JsonUtils.toJsonStr(loginVo));
@@ -195,7 +193,7 @@ public class LoginController {
         String gender = loginVo.getGender();
         String email = loginVo.getEmail();
         if (StringUtils.isBlank(code)) {
-            return JsonResponse.error(100000, "微信code不能为空。");
+            return CommonResult.error(100000, "微信code不能为空。");
         }
         String appid = null;
         String secret = null;
@@ -251,7 +249,7 @@ public class LoginController {
                         PhoneDecryptInfo info = aes.decrypt();
                         if (null==info){
                             System.out.println("error");
-                            return JsonResponse.error(100003, "解密微信手机号发生错误，会话超时。");
+                            return CommonResult.error(100003, "解密微信手机号发生错误，会话超时。");
                         }else {
                             System.out.println("======================解密微信手机号========================");
                             System.out.println(JsonUtils.toJsonStr(info));
@@ -289,7 +287,7 @@ public class LoginController {
                         //没有传手机号，并且根据unionId没有找到
                         userEntity = userService.getUserByUnionId(unionId);
                         if (userEntity==null || StringUtils.isBlank(userEntity.getMobile())) {
-                            return JsonResponse.error(100001, "手机号码不能为空。");
+                            return CommonResult.error(100001, "手机号码不能为空。");
                         }
                         userEntity = userService.saveThirdUser(thirdUserVo,userEntity);
                     }
@@ -299,18 +297,18 @@ public class LoginController {
                     subject.login(token);
                 } catch (Exception e) {
                     e.printStackTrace();
-                    return JsonResponse.error(100000, e.getMessage());
+                    return CommonResult.error(100000, e.getMessage());
                 }
                 if(userEntity!=null){
                     userEntity.setLastLoginPlatform(loginVo.getLastLoginPlatform());
                     userService.updateUserLastLoginDate(userEntity);
                 }
 
-                return JsonResponse.success(userEntity, null);
+                return CommonResult.success(userEntity);
             }
         }
 
-        return JsonResponse.success(null, null);
+        return CommonResult.success(null);
     }
 
     /**
@@ -333,16 +331,16 @@ public class LoginController {
     @ApiOperation(value = "退出登陆")
     @ResponseBody
     @RequestMapping("/loginOut")
-    public String loginOut() {
+    public CommonResult loginOut() {
         Subject subject = SecurityUtils.getSubject();
         subject.logout();
-        return JsonResponse.success();
+        return CommonResult.success();
     }
 
     @ApiOperation(value = "获取微信Token")
     @ResponseBody
     @RequestMapping("/weixinToken")
-    public String weixinToken(String grant_type,String appid,String secret) {
+    public CommonResult<String> weixinToken(String grant_type,String appid,String secret) {
 
         if (StringUtils.isNotBlank(grant_type)){
 
@@ -359,11 +357,11 @@ public class LoginController {
             String errcode = jsonObject.getString("errcode");
             if (StringUtils.isBlank(errcode)) {
                 String access_token = jsonObject.getString("access_token");
-                return JsonResponse.success(access_token, null);
+                return CommonResult.success(access_token);
             }
         }
 
-        return JsonResponse.success(null, null);
+        return CommonResult.success(null);
     }
 
     /**
@@ -371,7 +369,7 @@ public class LoginController {
      */
     @ResponseBody
     @RequestMapping("/deciphering")
-    public  String deciphering(String encryptedData,
+    public  CommonResult<PhoneDecryptInfo> deciphering(String encryptedData,
                                             String iv, String sessionKey,
                                             HttpServletRequest request) {
 
@@ -398,32 +396,32 @@ public class LoginController {
         }
 
 
-        return JsonResponse.success(info, null);
+        return CommonResult.success(info);
     }
 
 
     @ResponseBody
     @RequestMapping("/bindingMobile")
-    public String bindingMobile() {
+    public CommonResult<UserEntity> bindingMobile() {
 
         String jsonString = WebUtil.getJsonBody(req);
         UserEntity userEntity = JSON.parseObject(jsonString, UserEntity.class);
         if (StringUtils.isBlank(userEntity.getLoginName())) {
-            return JsonResponse.error(100000, "用户名不能为空。");
+            return CommonResult.error(100000, "用户名不能为空。");
         }
         if (StringUtils.isBlank(userEntity.getMobile())) {
-            return JsonResponse.error(100001, "手机号码不能为空。");
+            return CommonResult.error(100001, "手机号码不能为空。");
         }
         if (StringUtils.isBlank(userEntity.getVerifyCode())) {
-            return JsonResponse.error(100002, "验证码不能为空。");
+            return CommonResult.error(100002, "验证码不能为空。");
         }
         UserEntity user = userService.getUser(userEntity.getLoginName());
         if (user == null) {
-            return JsonResponse.error(100003, "用户尚未注册");
+            return CommonResult.error(100003, "用户尚未注册");
         }
         UserEntity userMobile = userService.getUserByMobile(userEntity.getMobile());
         if (userMobile != null) {
-            return JsonResponse.error(100003, "手机号码已被其他用户占用，请更换");
+            return CommonResult.error(100003, "手机号码已被其他用户占用，请更换");
         }
         String code = userEntity.getVerifyCode();
         if(smsService.validateCode(userEntity.getMobile(),code)){
@@ -436,9 +434,9 @@ public class LoginController {
             }
             userService.updateUser(user);
         }else{
-            return JsonResponse.error(100004, "验证码输入错误");
+            return CommonResult.error(100004, "验证码输入错误");
         }
-        return JsonResponse.success(user);
+        return CommonResult.success(user);
     }
 
 }
