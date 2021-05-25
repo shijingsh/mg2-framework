@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * 简单形式的分页组件
  */
-public class PageTableVO extends MgPageable {
+public class PageTableVO<T> extends MgPageable {
 
 	private static final long serialVersionUID = -2332973656118325329L;
 
@@ -16,7 +16,7 @@ public class PageTableVO extends MgPageable {
 	/**
 	 * 数据集合
 	 */
-	private List<?> rowData;
+	private List<T> rowData;
 	/**
 	 * 扩展信息
 	 */
@@ -44,14 +44,14 @@ public class PageTableVO extends MgPageable {
 			setPageSize(vo.getPageSize());
 		}
 	}
-	public List<?> getRowData() {
+	public List<T> getRowData() {
 		if(rowData==null){
 			rowData = new ArrayList<>();
 		}
 		return rowData;
 	}
 
-	public void setRowData(List<?> rowData) {
+	public void setRowData(List<T> rowData) {
 		this.rowData = rowData;
 	}
 
