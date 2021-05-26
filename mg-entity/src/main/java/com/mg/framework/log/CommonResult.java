@@ -5,7 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 /**
  * 封装接口相应对象
  */
-public class CommonResult<T> {
+public class CommonResult<T> implements java.io.Serializable{
 	public static int SUCCESS = 0;
 	public static int ERROR = 1;
 	//错误代码
